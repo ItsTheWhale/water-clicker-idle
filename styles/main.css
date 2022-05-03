@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.heading-wrapper {
+    display: flex;
+    justify-content: center;
+}
+.nav {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+.location {
+    margin: 10px;
+}
+.clickMe {
+    height: 250px;
+    width: 164px;
+}
+#gameHeader {
+    display: flex;
+    justify-content: center;
+}
+#gameBody {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+.shop-object{
+    border: 2px solid black;
+}
