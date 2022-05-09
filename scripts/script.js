@@ -163,9 +163,8 @@ var save = {
     autosaveTimeout: 0,
     autosaveTimer: 0,
     autoSave: function () {
-        cache.setCookie("water", String(stats.water), 365, "/");
-        cache.setCookie("clicks", String(stats.clicks), 365, "/");
-        save.autosaveTimeout - window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
+        cache.setCookie("stats", JSON.stringify(stats), 365, '/');
+        save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
     }
 };
 var config = {};
@@ -180,8 +179,7 @@ var init = {
         console.log("Game initialised!");
     },
     stats: function () {
-        stats.water = Number(cache.getCookie("water"));
-        stats.clicks = Number(cache.getCookie("clicks"));
+        stats = JSON.parse(cache.getCookie("stats"));
     },
     userInterface: function () {
         $("#pageHome").show();
