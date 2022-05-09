@@ -179,7 +179,36 @@ var init = {
         console.log("Game initialised!");
     },
     stats: function () {
-        stats = JSON.parse(cache.getCookie("stats"));
+        try {
+            stats = JSON.parse(cache.getCookie("stats"));
+        }
+        catch (e) {
+            stats = {
+                water: 0,
+                clicks: 0,
+                totalWater: 0,
+                waterMulti: 1,
+                unlockedShopItems: 0,
+                unlockedUpgradeItems: 0,
+                unlockedAchievements: 0,
+                unlockedOcean: false,
+                unlockedLab: false,
+                shopSpoonUnlocked: false,
+                shopCupUnlocked: false,
+                shopBucketUnlocked: false,
+                shopMapUnlocked: false,
+                shopTestTubeUnlocked: false,
+                shopSpoonBought: false,
+                shopCupBought: false,
+                shopBucketBought: false,
+                shopMapBought: false,
+                shopTestTubeBought: false,
+                upgradeReducedEvap1Unlocked: false,
+                upgradeReducedEvap2Unlocked: false,
+                upgradeReducedEvap1Bought: false,
+                upgradeReducedEvap2Bought: false
+            };
+        }
     },
     userInterface: function () {
         $("#pageHome").show();
