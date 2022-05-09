@@ -143,6 +143,8 @@ var graphics = {
             $("#navLab").show();
         if (stats.unlockedAchievements > 0)
             $("#navAchievements").show();
+        if (stats.totalWater > 0)
+            $("#navSettings").show();
     },
     renderShop: function () {
         if (stats.shopSpoonUnlocked)
