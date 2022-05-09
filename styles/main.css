@@ -13,7 +13,7 @@ body {
 .location {
     margin: 10px;
 }
-.clickMe {
+.click-me {
     height: 250px;
     width: 164px;
 }
@@ -26,6 +26,25 @@ body {
     justify-content: center;
     flex-direction: row;
 }
-.shop-object{
-    border: 2px solid black;
+#notifications {
+    display: block;
+    float: left;
+}
+#notification-container {
+    float: left;
+}
+.shop-container {
+    float: left;
+    margin: 50px;
+}
+.shop-object {
+    margin: 10px;
+    border: 1px solid black;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.shop-object > h2 {
+    margin: 5px;
 }

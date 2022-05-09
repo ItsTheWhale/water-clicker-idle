@@ -35,38 +35,77 @@
         <div class="location" id="navAchieve">
             <button>Achievements</button>
         </div>
+        <div>
+            <div id="navSettings">
+                <button>Settings</button>
+            </div>
+        </div>
     </div>
     <div id="gameBody">
+        <div id="notifications">
+            <div id="notification-container">
+                Foo
+            </div>
+        </div>
         <div id="pageHome">
             <div>
-                <img class="clickMe" id="clickMe" alt="Click Me" src="img/Water_Drop.png">
+                <img class="click-me" id="clickMe" alt="Click Me" src="img/Water_Drop.png">
             </div>
         </div>
         <div id="pageItems">
-            <div>
-                <h2>Spoon</h2>
+            <div class="shop-container">
+                <div class="shop-object" id="shopSpoon">
+                    <h2>Spoon</h2>
+                    <p>A metal spoon that scoops 1 ml of water per second</p>
+                </div>
+                <div class="shop-object" id="shopCup">
+                    <h2>Cup</h2>
+                    <p>A simple cup that scoops 5ml of water per second</p>
+                </div>
+                <div class="shop-object" id="shopBucket">
+                    <h2>Bucket</h2>
+                    <p>An iron bucket that can carry 20ml of water per second</p>
+                </div>
             </div>
-            <div>
-                <h2>Cup</h2>
-            </div>
-            <div>
-                <h2>A Dusty Map</h2>
-            </div>
-            <div>
-                <h2>A Test Tube</h2>
+            <div class="shop-container">
+                <div class="shop-object" id="shopMap">
+                    <h2>A Dusty Map</h2>
+                    <p>An old map, covered with dust after years of disuse</p>
+                </div>
+                <div class="shop-object" id="shopTestTube">
+                    <h2>A Test Tube</h2>
+                    <p>A glimmering test tube made of clear quartz crystal</p>
+                </div>
             </div>
         </div>
         <div id="pageUpgrades">
-            <div>
-                <h2>Reduced Eveporation I</h2>
-            </div>
-            <div>
-                <h2>Reduced Evaporation II</h2>
+            <div class="shop-container">
+                <div class="shop-object" id="upgradeReducedEvap1">
+                    <h2>Reduced Evaporation I</h2>
+                    <p>Reduces water evaporation and increases water production by 5%</p>
+                </div>
+                <div class="shop-object" id="upgradeReducedEvap2">
+                    <h2>Reduced Evaporation II</h2>
+                    <p>Reduces water evaporation and increases water production by 5%</p>
+                </div>
             </div>
         </div>
-        <div id="pageDeep"></div>
+        <div id="pageDeep">
+            <h1>The Ocean Deep</h1>
+        </div>
         <div id="pageLab"></div>
         <div id="pageAchieve"></div>
+        <div id="pageSettings">
+            <div>
+                <button>Save</button>
+            </div>
+            <div>
+                <button>Export</button>
+            </div>
+            <div>
+                <button>Import</button>
+            </div>
+        </div>
     </div>
 </body>
 
