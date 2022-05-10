@@ -16,6 +16,7 @@ body {
 .click-me {
     height: 250px;
     width: 164px;
+    text-align: center;
 }
 #gameHeader {
     display: flex;
