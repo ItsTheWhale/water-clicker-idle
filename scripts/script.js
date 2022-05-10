@@ -51,18 +51,21 @@ var stats = {
     unlockedOcean: false,
     unlockedLab: false,
     shopSpoonUnlocked: false,
-    shopCupUnlocked: false,
-    shopBucketUnlocked: false,
-    shopMapUnlocked: false,
-    shopTestTubeUnlocked: false,
     shopSpoonBought: false,
+    boughtSpoons: 0,
+    shopCupUnlocked: false,
     shopCupBought: false,
+    boughtCups: 0,
+    shopBucketUnlocked: false,
     shopBucketBought: false,
+    boughtBuckets: 0,
+    shopMapUnlocked: false,
     shopMapBought: false,
+    shopTestTubeUnlocked: false,
     shopTestTubeBought: false,
     upgradeReducedEvap1Unlocked: false,
-    upgradeReducedEvap2Unlocked: false,
     upgradeReducedEvap1Bought: false,
+    upgradeReducedEvap2Unlocked: false,
     upgradeReducedEvap2Bought: false
 };
 var tempStats = {
@@ -80,14 +83,41 @@ var input = {
     }
 };
 var shop = {
-    itemIDs: ["spoon", "cup", "bucket"],
+    itemIDs: ["Spoon", "Cup", "Bucket"],
     itemName: ["Spoon", "Cup", "Bucket"],
     shopRequirements: [1, 50, 100],
-    specialItemIDs: ["map", "testTube"],
-    specialItemNames: ["A Dusty Map", "A Test Tube"],
-    specialItemRequirements: [1000, 50000],
-    upgradeIDs: ["reducedEvap1", "reducedEvap2"],
+    specialItems: {
+        Map: {
+            id: "Map",
+            detectRequirements: function () {
+                if (stats.totalWater > 0)
+                    return true;
+            }
+        },
+        TestTube: {
+            id: "TestTube",
+            detectRequirements: function () {
+                if (stats.water >= 10000 && stats.shopMapBought)
+                    return true;
+            }
+        }
+    },
+    upgradeIDs: ["ReducedEvap1", "ReducedEvap2"],
     upgradeName: ["Reduced Evaporation I", "Reduced Evaporation II"],
+    specialUpgrades: {
+        BiggerSpoon: {
+            detectRequirements: function () {
+                if (stats.boughtSpoons >= 1)
+                    return true;
+            }
+        },
+        ReinforcedSpoon: {
+            detectRequirements: function () {
+                if (stats.boughtSpoons >= 5)
+                    return true;
+            }
+        }
+    },
     upgradeRequirements: [1, 50, 100],
     detectRequirements: function () {
         if (stats.water >= shop.shopRequirements[stats.unlockedShopItems]) {
@@ -102,16 +132,22 @@ var shop = {
         }
     },
     unlockShopItem: function () {
-        console.log(shop.itemIDs[stats.unlockedShopItems]);
+        console.log(shop.itemIDs[stats.unlockedShopItems - 1]);
+        eval("stats.shop".concat(shop.itemIDs[stats.unlockedShopItems], "Unlocked = true;"));
         graphics.renderShop();
     },
+    unlockSpecialShopItem: function () {
+    },
     unlockUpgradeItem: function () {
-        console.log(shop.itemIDs[stats.unlockedShopItems]);
+        console.log(shop.upgradeIDs[stats.unlockedShopItems - 1]);
+        eval("stats.upgrade".concat(shop.upgradeIDs[stats.unlockedUpgradeItems], "Unlocked = true;"));
         graphics.renderUpgrades();
+    },
+    unlockSpecialUpgradeItem: function () {
     }
 };
 var achievements = {
-    achievements: ["aWateryStart"],
+    achievements: ["AWateryStart"],
     achievementNames: ["A watery start"],
     achievementDescriptions: ["Collect a first drop of water"],
     achievementRequirements: [1],
@@ -159,7 +195,12 @@ var graphics = {
         if (stats.shopTestTubeUnlocked)
             $("#shopTestTube").show();
     },
-    renderUpgrades: function () { }
+    renderUpgrades: function () {
+        if (stats.upgradeReducedEvap1Unlocked)
+            $("#upgradeReducedEvap1").show();
+        if (stats.upgradeReducedEvap2Unlocked)
+            $("#upgradeReducedEvap2").show();
+    }
 };
 var save = {
     autosaveTimeout: 0,
@@ -185,32 +226,8 @@ var init = {
             stats = JSON.parse(cache.getCookie("stats"));
         }
         catch (e) {
-            stats = {
-                water: 0,
-                clicks: 0,
-                totalWater: 0,
-                waterMulti: 1,
-                unlockedShopItems: 0,
-                unlockedUpgradeItems: 0,
-                unlockedAchievements: 0,
-                unlockedOcean: false,
-                unlockedLab: false,
-                shopSpoonUnlocked: false,
-                shopCupUnlocked: false,
-                shopBucketUnlocked: false,
-                shopMapUnlocked: false,
-                shopTestTubeUnlocked: false,
-                shopSpoonBought: false,
-                shopCupBought: false,
-                shopBucketBought: false,
-                shopMapBought: false,
-                shopTestTubeBought: false,
-                upgradeReducedEvap1Unlocked: false,
-                upgradeReducedEvap2Unlocked: false,
-                upgradeReducedEvap1Bought: false,
-                upgradeReducedEvap2Bought: false
-            };
         }
+        ;
     },
     userInterface: function () {
         $("#pageHome").show();

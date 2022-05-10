@@ -29,9 +29,13 @@ body {
 #notifications {
     display: block;
     float: left;
+    margin: 50px;
 }
 #notification-container {
     float: left;
+}
+.nav-settings {
+    float: right;
 }
 .shop-container {
     float: left;
