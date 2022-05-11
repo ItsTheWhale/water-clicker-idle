@@ -8,7 +8,7 @@
     <meta name="keywords" content="water, idle, clicker, incremental, game">
     <title>Water Clicker</title>
     <link rel="stylesheet" type="text/css" href="styles/main.css">
-    <script type="text/javascript" src="libs/jquery-3.6.0.js"></script>
+    <script type="text/javascript" src="libs/jquery-3.6.0.min.js"></script>
     <script defer type="text/javascript" src="scripts/script.js"></script>
 </head>
 
@@ -41,11 +41,7 @@
             </div>
         </div>
     </div>
-    <div id="notifications">
-        <div id="notification-container">
-            Foo
-        </div>
-    </div>
+    <div id="notifications-container"></div>
     <div id="gameBody">
         <div id="pageHome">
             <div>
@@ -107,7 +103,7 @@
         <div id="pageAchieve"></div>
         <div id="pageSettings">
             <div>
-                <button>Save</button>
+                <button id="save">Save</button>
             </div>
             <div>
                 <button>Export</button>
