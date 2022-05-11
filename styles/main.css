@@ -27,13 +27,11 @@ body {
     justify-content: center;
     flex-direction: row;
 }
-#notifications {
+#notifications-container {
     display: block;
     float: left;
     margin: 50px;
-}
-#notification-container {
-    float: left;
+    line-height: 1.5em;
 }
 .nav-settings {
     float: right;
