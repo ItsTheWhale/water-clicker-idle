@@ -47,7 +47,27 @@ body {
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
+    user-select: none;
+}
+.shop-object:hover {
+    background-color: #e0e0e0;
 }
 .shop-object > h2 {
+    float: left;
     margin: 5px;
+}
+.shop-object > .description {
+    clear: both;
+}
+.shop-object > [id$="Amount"] {
+    font-size: 1.5em;
+    margin-right: 30px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    float: right;
+}
+.shop-object [id$="Price"] {
+    font-size: 0.7em;
+    margin-left: 10px;
+    display: inline;
 }

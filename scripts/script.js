@@ -32,41 +32,79 @@ var devTools = {
         stats.waterMulti = multi;
     },
     ruinthefun: function () {
-        devTools.setWater(99999);
+        devTools.setWater(9999999999999999);
         devTools.waterMulti(99);
         console.log("DEVTOOLS: ruinthefun");
     }
 };
 var gameConstants = {
+    itemPriceIncrement: 1.2,
     autosaveTimer: 300000
 };
 var stats = {
     water: 0,
     clicks: 0,
+    wpt: 0,
     totalWater: 0,
     waterMulti: 1,
+    clickMulti: 1,
     unlockedShopItems: 0,
     unlockedUpgradeItems: 0,
     unlockedAchievements: 0,
-    unlockedOcean: false,
-    unlockedLab: false,
-    shopSpoonUnlocked: false,
-    shopSpoonBought: false,
-    boughtSpoons: 0,
-    shopCupUnlocked: false,
-    shopCupBought: false,
-    boughtCups: 0,
-    shopBucketUnlocked: false,
-    shopBucketBought: false,
-    boughtBuckets: 0,
-    shopMapUnlocked: false,
-    shopMapBought: false,
-    shopTestTubeUnlocked: false,
-    shopTestTubeBought: false,
-    upgradeReducedEvap1Unlocked: false,
-    upgradeReducedEvap1Bought: false,
-    upgradeReducedEvap2Unlocked: false,
-    upgradeReducedEvap2Bought: false
+    ocean: {
+        unlocked: false
+    },
+    lab: {
+        unlocked: false
+    },
+    shopSpoon: {
+        unlocked: false,
+        hasBought: false,
+        bought: 0,
+        currentPrice: 10
+    },
+    shopCup: {
+        unlocked: false,
+        hasBought: false,
+        bought: 0,
+        currentPrice: 50
+    },
+    shopBucket: {
+        unlocked: false,
+        hasBought: false,
+        bought: 0,
+        currentPrice: 100
+    },
+    shopMap: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 1000
+    },
+    shopTestTube: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 50000
+    },
+    upgradeReducedEvap1: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 50
+    },
+    upgradeReducedEvap2: {
+        unlocked: false,
+        hasBought: false,
+        curentPrice: 100
+    },
+    upgradeBiggerSpoon: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 50
+    },
+    upgradeReinforcedSpoon: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 100
+    }
 };
 var tempStats = {
     currentPage: "pageHome",
@@ -74,8 +112,8 @@ var tempStats = {
 };
 var input = {
     click: function () {
-        stats.water += stats.waterMulti;
-        stats.totalWater += stats.waterMulti;
+        stats.water += stats.clickMulti * stats.waterMulti;
+        stats.totalWater += stats.clickMulti * stats.waterMulti;
         stats.clicks++;
         shop.detectRequirements();
         achievements.detectRequirements();
@@ -92,13 +130,21 @@ var shop = {
             detectRequirements: function () {
                 if (stats.totalWater > 0)
                     return true;
+            },
+            unlock: function () {
+                stats.shopMap.unlocked = true;
+                console.log("A Dusty Map unlocked!");
             }
         },
         TestTube: {
             id: "TestTube",
             detectRequirements: function () {
-                if (stats.water >= 10000 && stats.shopMapBought)
+                if (stats.water >= 10000 && stats.shopMap.hasBought)
                     return true;
+            },
+            unlock: function () {
+                stats.shopTestTube.unlocked = true;
+                console.log("A Test Tube unlocked!");
             }
         }
     },
@@ -107,44 +153,99 @@ var shop = {
     specialUpgrades: {
         BiggerSpoon: {
             detectRequirements: function () {
-                if (stats.boughtSpoons >= 1)
+                if (stats.shopSpoon.bought >= 1)
                     return true;
             }
         },
         ReinforcedSpoon: {
             detectRequirements: function () {
-                if (stats.boughtSpoons >= 5)
+                if (stats.shopSpoon.bought >= 5)
                     return true;
             }
         }
     },
     upgradeRequirements: [1, 50, 100],
     detectRequirements: function () {
-        if (stats.water >= shop.shopRequirements[stats.unlockedShopItems]) {
-            stats.unlockedShopItems++;
-            shop.unlockShopItem();
-            console.log("New shop item unlocked!");
+        try {
+            if (stats.water >= shop.shopRequirements[stats.unlockedShopItems]) {
+                shop.unlockShopItem();
+                stats.unlockedShopItems++;
+                console.log("New shop item unlocked!");
+            }
+            if (stats.water >= shop.upgradeRequirements[stats.unlockedUpgradeItems]) {
+                shop.unlockUpgradeItem();
+                stats.unlockedUpgradeItems++;
+                console.log("New upgrade item unlocked!");
+            }
+            {
+                if (shop.specialItems.Map.detectRequirements() && !stats.shopMap.unlocked) {
+                    shop.specialItems.Map.unlock();
+                }
+                if (shop.specialItems.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
+                    shop.specialItems.TestTube.unlock();
+                }
+            }
         }
-        if (stats.water >= shop.upgradeRequirements[stats.unlockedUpgradeItems]) {
-            stats.unlockedUpgradeItems++;
-            shop.unlockUpgradeItem();
-            console.log("New upgrade item unlocked!");
-        }
+        catch (e) { }
+        ;
     },
     unlockShopItem: function () {
-        console.log(shop.itemIDs[stats.unlockedShopItems - 1]);
-        eval("stats.shop".concat(shop.itemIDs[stats.unlockedShopItems], "Unlocked = true;"));
+        eval("stats.shop".concat(shop.itemIDs[stats.unlockedShopItems], ".unlocked = true;"));
         graphics.renderShop();
     },
     unlockSpecialShopItem: function () {
     },
     unlockUpgradeItem: function () {
-        console.log(shop.upgradeIDs[stats.unlockedShopItems - 1]);
-        eval("stats.upgrade".concat(shop.upgradeIDs[stats.unlockedUpgradeItems], "Unlocked = true;"));
+        eval("stats.upgrade".concat(shop.upgradeIDs[stats.unlockedUpgradeItems], ".unlocked = true;"));
         graphics.renderUpgrades();
     },
     unlockSpecialUpgradeItem: function () {
-    }
+    },
+    Spoon: {
+        purchase: function () {
+            if (stats.water < stats.shopSpoon.currentPrice)
+                return;
+            if (!stats.shopSpoon.hasBought)
+                stats.shopSpoon.hasBought = true;
+            stats.shopSpoon.bought++;
+            stats.water -= stats.shopSpoon.currentPrice;
+            stats.wpt += 0.1;
+            stats.shopSpoon.currentPrice = Math.ceil(stats.shopSpoon.currentPrice * gameConstants.itemPriceIncrement);
+            graphics.renderShop();
+        }
+    },
+    Cup: {
+        purchase: function () {
+            if (stats.water < stats.shopCup.currentPrice)
+                return;
+            if (!stats.shopCup.hasBought)
+                stats.shopCup.hasBought = true;
+            stats.shopCup.bought++;
+            stats.water -= stats.shopCup.currentPrice;
+            stats.wpt += 0.5;
+            stats.shopCup.currentPrice = Math.ceil(stats.shopCup.currentPrice * gameConstants.itemPriceIncrement);
+            graphics.renderShop();
+        }
+    },
+    Bucket: {
+        purchase: function () {
+            if (stats.water < stats.shopBucket.currentPrice)
+                return;
+            if (!stats.shopBucket.hasBought)
+                stats.shopBucket.hasBought = true;
+            stats.shopBucket.bought++;
+            stats.water -= stats.shopBucket.currentPrice;
+            stats.wpt += 2;
+            stats.shopBucket.currentPrice = Math.ceil(stats.shopBucket.currentPrice * gameConstants.itemPriceIncrement);
+            graphics.renderShop();
+        }
+    },
+    Map: {},
+    TestTube: {},
+    ReducedEvap1: {},
+    ReducedEvap2: {},
+    BiggerSpoon: {},
+    ReinforcedSpoon: {}
 };
 var achievements = {
     achievements: ["AWateryStart"],
@@ -164,7 +265,7 @@ var graphics = {
         graphics.renderNavigation();
     },
     renderClicks: function () {
-        $("#waterAmount").html("".concat(stats.water, " ml water"));
+        $("#waterAmount").html("".concat(Math.floor(stats.water), " ml water"));
     },
     renderNavigation: function () {
         if (stats.totalWater > 0)
@@ -173,9 +274,9 @@ var graphics = {
             $("#navItems").show();
         if (stats.unlockedUpgradeItems > 0)
             $("#navUpgrades").show();
-        if (stats.unlockedOcean)
+        if (stats.ocean.unlocked)
             $("#navDeep").show();
-        if (stats.unlockedLab)
+        if (stats.lab.unlocked)
             $("#navLab").show();
         if (stats.unlockedAchievements > 0)
             $("#navAchievements").show();
@@ -183,23 +284,71 @@ var graphics = {
             $("#navSettings").show();
     },
     renderShop: function () {
-        if (stats.shopSpoonUnlocked)
+        if (stats.shopSpoon.unlocked)
             $("#shopSpoon").show();
         ;
-        if (stats.shopCupUnlocked)
+        if (stats.shopCup.unlocked)
             $("#shopCup").show();
-        if (stats.shopBucketUnlocked)
+        if (stats.shopBucket.unlocked)
             $("#shopBucket").show();
-        if (stats.shopMapUnlocked)
+        if (stats.shopMap.unlocked)
             $("#shopMap").show();
-        if (stats.shopTestTubeUnlocked)
+        if (stats.shopTestTube.unlocked)
             $("#shopTestTube").show();
+        $("#shopSpoonAmount").text(String(stats.shopSpoon.bought));
+        $("#shopCupAmount").text(String(stats.shopCup.bought));
+        $("#shopBucketAmount").text(String(stats.shopBucket.bought));
+        //Render Price
+        $("#shopSpoonPrice").text(String(stats.shopSpoon.currentPrice));
+        $("#shopCupPrice").text(String(stats.shopCup.currentPrice));
+        $("#shopBucketPrice").text(String(stats.shopBucket.currentPrice));
     },
     renderUpgrades: function () {
-        if (stats.upgradeReducedEvap1Unlocked)
+        if (stats.upgradeReducedEvap1.unlocked)
             $("#upgradeReducedEvap1").show();
-        if (stats.upgradeReducedEvap2Unlocked)
+        if (stats.upgradeReducedEvap2.unlocked)
             $("#upgradeReducedEvap2").show();
+    }
+};
+var notifications = {
+    notifications: [''],
+    notificationsLifespan: [0],
+    notificationTimeout: 0,
+    renderNotifications: function () {
+        for (var i = 0; i < notifications.notifications.length; i++) {
+            notifications.notificationsLifespan[i]--;
+            if (notifications.notificationsLifespan[i] == 0) {
+                $("#notification".concat(i + 1)).fadeOut();
+                notifications.notifications.shift();
+                notifications.notificationsLifespan.shift();
+                for (var i_1 = 0; i_1 < notifications.notifications.length; i_1++) {
+                    $("#notification".concat(i_1 + 2)).attr("id", "notification".concat(i_1 + 1));
+                }
+            }
+        }
+        notifications.notificationTimeout = window.setTimeout(notifications.renderNotifications, 1000);
+    },
+    add: function (content) {
+        notifications.notifications.push(content);
+        notifications.notificationsLifespan.push(30);
+        $("#notifications-container").append("<div id=\"notification".concat(notifications.notifications.length, "\"class=\"notification\" style=\"opacity:1\">").concat(notifications.notifications[notifications.notifications.length - 1], "</div>"));
+        if (notifications.notifications.length > 15) {
+            notifications.notifications.shift();
+            notifications.notificationsLifespan.shift();
+            for (var i = 0; i < notifications.notifications.length; i++) {
+                $("#notification".concat(i + 2)).attr("id", "notification".concat(i + 1));
+            }
+            $("#notification1").hide();
+        }
+    }
+};
+var tick = {
+    tickTimeout: 0,
+    tick: function () {
+        stats.water += stats.wpt * stats.waterMulti;
+        stats.totalWater += stats.wpt * stats.waterMulti;
+        graphics.render();
+        tick.tickTimeout = window.setTimeout(tick.tick, 100);
     }
 };
 var save = {
@@ -208,6 +357,7 @@ var save = {
     autoSave: function () {
         cache.setCookie("stats", JSON.stringify(stats), 365, '/');
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
+        console.log("Saved!");
     }
 };
 var config = {};
@@ -218,6 +368,9 @@ var init = {
         init.controls();
         init.shop();
         init.upgrades();
+        init.shopPurchase();
+        init.upgradePurchase();
+        init.notifications();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
         console.log("Game initialised!");
     },
@@ -243,9 +396,9 @@ var init = {
             $("#navItems").hide();
         if (stats.unlockedUpgradeItems == 0)
             $("#navUpgrades").hide();
-        if (!stats.unlockedOcean)
+        if (!stats.ocean.unlocked)
             $("#navDeep").hide();
-        if (!stats.unlockedLab)
+        if (!stats.lab.unlocked)
             $("#navLab").hide();
         if (stats.unlockedAchievements == 0)
             $("#navAchieve").hide();
@@ -319,26 +472,46 @@ var init = {
                 $("#pageSettings").show();
             });
         }
+        {
+            $("#save").click(function () {
+                cache.setCookie("stats", JSON.stringify(stats), 365, '/');
+                console.log("Saved!");
+            });
+        }
     },
     shop: function () {
-        if (!stats.shopSpoonUnlocked)
+        if (!stats.shopSpoon.unlocked)
             $("#shopSpoon").hide();
-        if (!stats.shopCupUnlocked)
+        if (!stats.shopCup.unlocked)
             $("#shopCup").hide();
-        if (!stats.shopBucketUnlocked)
+        if (!stats.shopBucket.unlocked)
             $("#shopBucket").hide();
-        if (!stats.shopMapUnlocked)
+        if (!stats.shopMap.unlocked || stats.shopMap.hasBought)
             $("#shopMap").hide();
-        if (!stats.shopTestTubeUnlocked)
+        if (!stats.shopTestTube.unlocked || stats.shopTestTube.hasBought)
             $("#shopTestTube").hide();
     },
     upgrades: function () {
-        if (!stats.upgradeReducedEvap1Unlocked)
+        if (!stats.upgradeReducedEvap1.unlocked)
             $("#upgradeReducedEvap1").hide();
-        if (!stats.upgradeReducedEvap2Unlocked)
+        if (!stats.upgradeReducedEvap2.unlocked)
             $("#upgradeReducedEvap2").hide();
+        if (!stats.upgradeBiggerSpoon.unlocked)
+            $("#upgradeBiggerSpoon1").hide();
+        if (!stats.upgradeReinforcedSpoon.unlocked)
+            $("#upgradeReinforcedSpoon1").hide();
+    },
+    shopPurchase: function () {
+        $("#shopSpoon").click(shop.Spoon.purchase);
+        $("#shopCup").click(shop.Cup.purchase);
+        $("#shopBucket").click(shop.Bucket.purchase);
+    },
+    upgradePurchase: function () { },
+    notifications: function () {
+        notifications.renderNotifications();
     }
 };
 init.game();
+tick.tick();
 // devTools.ruinthefun();
-devTools.waterMulti(5);
+// devTools.waterMulti(5);
