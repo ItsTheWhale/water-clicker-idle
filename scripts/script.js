@@ -1,3 +1,5 @@
+"use strict";
+exports.__esModule = true;
 var cache = {
     setCookie: function (name, value, expiryDays, path) {
         var d = new Date();
@@ -31,6 +33,10 @@ var devTools = {
     waterMulti: function (multi) {
         stats.waterMulti = multi;
     },
+    unlockOcean: function () {
+        stats.ocean.unlocked = true;
+        stats.shopMap.hasBought = true;
+    },
     ruinthefun: function () {
         devTools.setWater(9999999999999999);
         devTools.waterMulti(99);
@@ -52,7 +58,9 @@ var stats = {
     unlockedUpgradeItems: 0,
     unlockedAchievements: 0,
     ocean: {
-        unlocked: false
+        unlocked: false,
+        diveUnlocked: false,
+        processorUnlocked: false
     },
     lab: {
         unlocked: false
@@ -79,6 +87,11 @@ var stats = {
         unlocked: false,
         hasBought: false,
         currentPrice: 1000
+    },
+    shopSwimsuit: {
+        unlocked: false,
+        hasBought: false,
+        currentPrice: 500
     },
     shopTestTube: {
         unlocked: false,
@@ -124,30 +137,6 @@ var shop = {
     itemIDs: ["Spoon", "Cup", "Bucket"],
     itemName: ["Spoon", "Cup", "Bucket"],
     shopRequirements: [1, 50, 100],
-    specialItems: {
-        Map: {
-            id: "Map",
-            detectRequirements: function () {
-                if (stats.totalWater > 0)
-                    return true;
-            },
-            unlock: function () {
-                stats.shopMap.unlocked = true;
-                console.log("A Dusty Map unlocked!");
-            }
-        },
-        TestTube: {
-            id: "TestTube",
-            detectRequirements: function () {
-                if (stats.water >= 10000 && stats.shopMap.hasBought)
-                    return true;
-            },
-            unlock: function () {
-                stats.shopTestTube.unlocked = true;
-                console.log("A Test Tube unlocked!");
-            }
-        }
-    },
     upgradeIDs: ["ReducedEvap1", "ReducedEvap2"],
     upgradeName: ["Reduced Evaporation I", "Reduced Evaporation II"],
     specialUpgrades: {
@@ -177,24 +166,25 @@ var shop = {
                 stats.unlockedUpgradeItems++;
                 console.log("New upgrade item unlocked!");
             }
-            {
-                if (shop.specialItems.Map.detectRequirements() && !stats.shopMap.unlocked) {
-                    shop.specialItems.Map.unlock();
-                }
-                if (shop.specialItems.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
-                    shop.specialItems.TestTube.unlock();
-                }
-            }
         }
         catch (e) { }
         ;
+        {
+            if (shop.Map.detectRequirements() && !stats.shopMap.unlocked) {
+                shop.Map.unlock();
+            }
+            if (shop.Swimsuit.detectRequirements() && !stats.shopSwimsuit.unlocked) {
+                shop.Swimsuit.unlock();
+            }
+            if (shop.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
+                shop.TestTube.unlock();
+            }
+        }
     },
     unlockShopItem: function () {
         eval("stats.shop".concat(shop.itemIDs[stats.unlockedShopItems], ".unlocked = true;"));
         graphics.renderShop();
         notifications.add("New item unlocked");
-    },
-    unlockSpecialShopItem: function () {
     },
     unlockUpgradeItem: function () {
         eval("stats.upgrade".concat(shop.upgradeIDs[stats.unlockedUpgradeItems], ".unlocked = true;"));
@@ -243,17 +233,56 @@ var shop = {
         }
     },
     Map: {
+        id: "Map",
+        detectRequirements: function () {
+            if (stats.totalWater > 0)
+                return true;
+        },
+        unlock: function () {
+            stats.shopMap.unlocked = true;
+            console.log("A Dusty Map unlocked!");
+            notifications.add("A Dusty Map unlocked");
+        },
         purchase: function () {
             if (stats.shopMap.hasBought || stats.water < stats.shopMap.currentPrice)
                 return;
-            if (!stats.shopMap.hasBought)
-                stats.shopMap.hasBought = true;
+            stats.shopMap.hasBought = true;
             stats.water -= stats.shopMap.currentPrice;
             stats.ocean.unlocked = true;
             graphics.renderShop();
         }
     },
-    TestTube: {},
+    Swimsuit: {
+        id: "Swimsuit",
+        detectRequirements: function () {
+            if (stats.shopMap.hasBought)
+                return true;
+        },
+        unlock: function () {
+            stats.shopSwimsuit.unlocked = true;
+            console.log("Swimsuit unlocked!");
+            notifications.add("Swimsuit unlocked");
+        },
+        purchase: function () {
+            if (stats.shopSwimsuit.hasBought || stats.water < stats.shopSwimsuit.currentPrice)
+                return;
+            stats.shopSwimsuit.hasBought = true;
+            stats.water -= stats.shopSwimsuit.currentPrice;
+            stats.ocean.diveUnlocked = true;
+            graphics.renderShop();
+        }
+    },
+    TestTube: {
+        id: "TestTube",
+        detectRequirements: function () {
+            if (stats.water >= 10000 && stats.shopMap.hasBought)
+                return true;
+        },
+        unlock: function () {
+            stats.shopTestTube.unlocked = true;
+            console.log("A Test Tube unlocked!");
+        }
+    },
     ReducedEvap1: {},
     ReducedEvap2: {},
     BiggerSpoon: {},
@@ -276,6 +305,9 @@ var graphics = {
     render: function () {
         graphics.renderClicks();
         graphics.renderNavigation();
+        graphics.renderShop();
+        graphics.renderUpgrades();
+        graphics.renderOcean();
     },
     renderClicks: function () {
         $("#waterAmount").html("".concat(Math.floor(stats.water), " ml water"));
@@ -306,11 +338,18 @@ var graphics = {
             $("#shopBucket").show();
         if (stats.shopMap.unlocked)
             $("#shopMap").show();
+        if (stats.shopSwimsuit.unlocked)
+            $("#shopSwimsuit").show();
         if (stats.shopTestTube.unlocked)
             $("#shopTestTube").show();
         $("#shopSpoonAmount").text(String(stats.shopSpoon.bought));
         $("#shopCupAmount").text(String(stats.shopCup.bought));
         $("#shopBucketAmount").text(String(stats.shopBucket.bought));
+        //Render Special Items
+        if (stats.shopMap.hasBought)
+            $("#shopMap").hide();
+        if (stats.shopSwimsuit.hasBought)
+            $("#shopSwimsuit").hide();
         //Render Price
         $("#shopSpoonPrice").text(String(stats.shopSpoon.currentPrice));
         $("#shopCupPrice").text(String(stats.shopCup.currentPrice));
@@ -321,6 +360,12 @@ var graphics = {
             $("#upgradeReducedEvap1").show();
         if (stats.upgradeReducedEvap2.unlocked)
             $("#upgradeReducedEvap2").show();
+    },
+    renderOcean: function () {
+        if (stats.ocean.diveUnlocked)
+            $("#theDeepOcean").show();
+        if (stats.ocean.processorUnlocked)
+            $("#oceanProcessor").show();
     }
 };
 var notifications = {
@@ -385,6 +430,7 @@ var init = {
         init.shopPurchase();
         init.upgradePurchase();
         init.notifications();
+        init.ocean();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
         console.log("Game initialised!");
     },
@@ -502,6 +548,8 @@ var init = {
             $("#shopBucket").hide();
         if (!stats.shopMap.unlocked || stats.shopMap.hasBought)
             $("#shopMap").hide();
+        if (!stats.shopSwimsuit.unlocked || stats.shopMap.hasBought)
+            $("#shopSwimsuit").hide();
         if (!stats.shopTestTube.unlocked || stats.shopTestTube.hasBought)
             $("#shopTestTube").hide();
     },
@@ -520,13 +568,38 @@ var init = {
         $("#shopCup").click(shop.Cup.purchase);
         $("#shopBucket").click(shop.Bucket.purchase);
         $("#shopMap").click(shop.Map.purchase);
+        $("#shopSwimsuit").click(shop.Swimsuit.purchase);
     },
     upgradePurchase: function () { },
     notifications: function () {
         notifications.renderNotifications();
+    },
+    ocean: function () {
+        $("#theDeepOcean").hide();
+        $("#oceanProcessor").hide();
+        //Oceanic Zones
+        $("#theSurface").hide();
+        $("#theTwilightZone").hide();
+        $("#theMidnightZone").hide();
+        $("#theAbyssalZone").hide();
+        $("#theHadalZone").hide();
+        //Navigating
+        $("#enterOcean").click(function () {
+            $("#mainOcean").hide();
+            $("#theDeepOcean").show();
+        });
+        $("#oceanProcessing").click(function () {
+            $("#mainOcean").hide();
+            $("#oceanProcessor").show();
+        });
+        if (!stats.ocean.diveUnlocked)
+            $("#enterOcean").hide();
+        if (!stats.ocean.processorUnlocked)
+            $("#oceanProcessing").hide();
     }
 };
 init.game();
 tick.tick();
 // devTools.ruinthefun();
-// devTools.waterMulti(5);
+devTools.waterMulti(5);
+// devTools.unlockOcean();

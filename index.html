@@ -51,15 +51,21 @@
         <div id="pageItems">
             <div class="shop-container">
                 <div class="shop-object" id="shopSpoon">
-                    <h2>Spoon<p id="shopSpoonPrice">x</p></h2><p id="shopSpoonAmount">0</p>
+                    <h2>Spoon<p id="shopSpoonPrice">x</p>
+                    </h2>
+                    <p id="shopSpoonAmount">0</p>
                     <p class="description">A metal spoon that scoops 1 ml of water per second</p>
                 </div>
                 <div class="shop-object" id="shopCup">
-                    <h2>Cup<p id="shopCupPrice">x</p></h2><p id="shopCupAmount">0</p>
+                    <h2>Cup<p id="shopCupPrice">x</p>
+                    </h2>
+                    <p id="shopCupAmount">0</p>
                     <p class="description">A simple cup that scoops 5ml of water per second</p>
                 </div>
                 <div class="shop-object" id="shopBucket">
-                    <h2>Bucket<p id="shopBucketPrice">x</p></h2><p id="shopBucketAmount">0</p>
+                    <h2>Bucket<p id="shopBucketPrice">x</p>
+                    </h2>
+                    <p id="shopBucketAmount">0</p>
                     <p class="description">An iron bucket that can carry 20ml of water per second</p>
                 </div>
             </div>
@@ -67,6 +73,10 @@
                 <div class="shop-object" id="shopMap">
                     <h2>A Dusty Map</h2>
                     <p class="description">An old map, covered with dust after years of disuse</p>
+                </div>
+                <div class="shop-object" id="shopSwimsuit">
+                    <h2>Swimsuit</h2>
+                    <p class="description">A thing you can use to dive in the ocean</p>
                 </div>
                 <div class="shop-object" id="shopTestTube">
                     <h2>A Test Tube</h2>
@@ -97,7 +107,26 @@
             </div>
         </div>
         <div id="pageDeep">
-            <h1>The Ocean Deep</h1>
+            <div id="mainOcean">
+                <h1>The Ocean Deep</h1>
+                <div>
+                    <button id="enterOcean">Enter the ocean</button>
+                    <button id="oceanProcessing">Seawater Processing</button>
+                </div>
+            </div>
+            <div id="theDeepOcean">
+                <h1 id="theSurface">The Surface</h1>
+                <h1 id="theSunlightZone">The Sunlight Zone</h1>
+                <h1 id="theTwilightZone">The Twilight Zone</h1>
+                <h1 id="theMidnightZone">The Midnight Zone</h1>
+                <h1 id="theAbyssalZone">The Abyssal Zone</h1>
+                <h1 id="theHadalZone">The Hadal Zone</h1>
+                <p id="oceanEvent">insert event</p>
+                <button id="swimUp">Swim Up</button>
+                <button id="swimDown">Swim Down</button>
+                <button id="swimLeave">Leave</button>
+            </div>
+            <div id="oceanProcessor"></div>
         </div>
         <div id="pageLab"></div>
         <div id="pageAchieve"></div>

@@ -74,3 +74,12 @@ body {
     margin-left: 10px;
     display: inline;
 }
+#pageDeep {
+    text-align: center;
+}
+#pageDeep button {
+    margin: 20px;
+}
+#theDeepOcean {
+    text-align: center;
+}
