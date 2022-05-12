@@ -192,12 +192,14 @@ var shop = {
     unlockShopItem: function () {
         eval("stats.shop".concat(shop.itemIDs[stats.unlockedShopItems], ".unlocked = true;"));
         graphics.renderShop();
+        notifications.add("New item unlocked");
     },
     unlockSpecialShopItem: function () {
     },
     unlockUpgradeItem: function () {
         eval("stats.upgrade".concat(shop.upgradeIDs[stats.unlockedUpgradeItems], ".unlocked = true;"));
         graphics.renderUpgrades();
+        notifications.add("New upgrade unlocked");
     },
     unlockSpecialUpgradeItem: function () {
     },
@@ -240,7 +242,17 @@ var shop = {
             graphics.renderShop();
         }
     },
-    Map: {},
+    Map: {
+        purchase: function () {
+            if (stats.shopMap.hasBought || stats.water < stats.shopMap.currentPrice)
+                return;
+            if (!stats.shopMap.hasBought)
+                stats.shopMap.hasBought = true;
+            stats.water -= stats.shopMap.currentPrice;
+            stats.ocean.unlocked = true;
+            graphics.renderShop();
+        }
+    },
     TestTube: {},
     ReducedEvap1: {},
     ReducedEvap2: {},
@@ -256,6 +268,7 @@ var achievements = {
         if (stats.water >= achievements.achievementRequirements[stats.unlockedAchievements]) {
             stats.unlockedAchievements++;
             console.log("New achievement unlocked!");
+            notifications.add("New achievement unlocked");
         }
     }
 };
@@ -331,7 +344,7 @@ var notifications = {
     add: function (content) {
         notifications.notifications.push(content);
         notifications.notificationsLifespan.push(30);
-        $("#notifications-container").append("<div id=\"notification".concat(notifications.notifications.length, "\"class=\"notification\" style=\"opacity:1\">").concat(notifications.notifications[notifications.notifications.length - 1], "</div>"));
+        $("#notifications-container").prepend("<div id=\"notification".concat(notifications.notifications.length, "\"class=\"notification\" style=\"opacity:1\">").concat(notifications.notifications[notifications.notifications.length - 1], "</div>"));
         if (notifications.notifications.length > 15) {
             notifications.notifications.shift();
             notifications.notificationsLifespan.shift();
@@ -347,6 +360,7 @@ var tick = {
     tick: function () {
         stats.water += stats.wpt * stats.waterMulti;
         stats.totalWater += stats.wpt * stats.waterMulti;
+        shop.detectRequirements();
         graphics.render();
         tick.tickTimeout = window.setTimeout(tick.tick, 100);
     }
@@ -505,6 +519,7 @@ var init = {
         $("#shopSpoon").click(shop.Spoon.purchase);
         $("#shopCup").click(shop.Cup.purchase);
         $("#shopBucket").click(shop.Bucket.purchase);
+        $("#shopMap").click(shop.Map.purchase);
     },
     upgradePurchase: function () { },
     notifications: function () {

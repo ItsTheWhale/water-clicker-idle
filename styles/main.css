@@ -17,6 +17,7 @@ body {
     height: 250px;
     width: 164px;
     text-align: center;
+    user-select: none;
 }
 #gameHeader {
     display: flex;
@@ -28,10 +29,12 @@ body {
     flex-direction: row;
 }
 #notifications-container {
-    display: block;
+    display: inline;
     float: left;
-    margin: 50px;
+    position: absolute;
+    margin-left: 50px;
     line-height: 1.5em;
+    width: 30%;
 }
 .nav-settings {
     float: right;
