@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A water-themed idle clicker game created by 'the whale'">
+    <meta name="description" content="A minimalistic water-themed idle game">
     <meta name="keywords" content="water, idle, clicker, incremental, game">
     <title>Water Clicker</title>
     <link rel="stylesheet" type="text/css" href="styles/main.css">
@@ -71,19 +71,23 @@
             </div>
             <div class="shop-container">
                 <div class="shop-object" id="shopMap">
-                    <h2>A Dusty Map</h2>
+                    <h2>A Dusty Map<p id="shopMapPrice">1000</p>
+                    </h2>
                     <p class="description">An old map, covered with dust after years of disuse</p>
                 </div>
                 <div class="shop-object" id="shopSwimsuit">
-                    <h2>Swimsuit</h2>
+                    <h2>Swimsuit<p id="shopSwimsuitPrice">500</p>
+                    </h2>
                     <p class="description">A thing you can use to dive in the ocean</p>
                 </div>
                 <div class="shop-object" id="shopDesalinator">
-                    <h2>Seawater Desalinator</h2>
+                    <h2>Seawater Desalinator<p id="shopDesalinatorPrice">500</p>
+                    </h2>
                     <p class="description">Allows you to turn salt water into fresh water</p>
                 </div>
                 <div class="shop-object" id="shopTestTube">
-                    <h2>A Test Tube</h2>
+                    <h2>A Test Tube<p id="shopDesalinatorPrice">TO BE CONTINUED</p>
+                    </h2>
                     <p class="description">A glimmering test tube made of clear quartz crystal</p>
                 </div>
             </div>
@@ -91,24 +95,35 @@
         <div id="pageUpgrades">
             <div class="shop-container">
                 <div class="shop-object" id="upgradeBiggerSpoon">
-                    <h2>Bigger Spoon <span id="upgradeBiggerSpoonLevel">I</span></h2>
+                    <h2>Bigger Spoon <span id="upgradeBiggerSpoonLevel">I</span>
+                        <p id="upgradeBiggerSpoonPrice">50</p>
+                    </h2>
                     <p class="description">A bigger and more efficient spoon, increases spoon efficency by 10%</p>
                 </div>
                 <div class="shop-object" id="upgradeReinforcedSpoon">
-                    <h2>Reinforced Spoon <span id="upgradeReinforcedSpoonLevel">I</span></h2>
+                    <h2>Reinforced Spoon <span id="upgradeReinforcedSpoonLevel">I</span>
+                        <p id="upgradeReinforcedSpoonPrice">100</p>
+                    </h2>
                     <p class="description">Uses titanium to make the spoon, increases spoon efficency by 10%</p>
                 </div>
             </div>
             <div class="shop-container">
                 <div class="shop-object" id="upgradeReducedEvap">
-                    <h2>Reduced Evaporation <span id="upgradeReducedEvapLevel">I</span></h2>
+                    <h2>Reduced Evaporation <span id="upgradeReducedEvapLevel">I</span>
+                        <p id="upgradeReducedEvapPrice">50</p>
+                    </h2>
                     <p class="description">Reduces water evaporation and increases water production by 5%</p>
                 </div>
             </div>
         </div>
         <div id="pageDeep">
             <div id="mainOcean">
-                <h1>The Ocean Deep</h1>
+                <div class="flex-container justify-content-center flex-direction-column">
+                    <h1>The Ocean Deep</h1>
+                    <p style="width:30%">70% of the world's surface is covered by oceans. The deep seabed is less
+                        explored than the surface of the moon. The deepest point on Earth - the Challenger Deep - is
+                        10,929m deep, making the deepest ocean deeper than the tallest mountain.</p>
+                </div>
                 <div>
                     <button id="enterOcean">Enter the ocean</button>
                     <button id="oceanProcessing">Seawater Processing</button>

@@ -1,6 +1,9 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
+.flex-container {display: flex;}
+.justify-content-center {justify-content: center;}
+.flex-direction-column {flex-direction: column;}
 .heading-wrapper {
     display: flex;
     justify-content: center;

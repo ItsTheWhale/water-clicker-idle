@@ -122,6 +122,7 @@ var stats = {
         unlocked: false,
         hasUnlocked: false,
         hasBought: false,
+        currentRequirement: 1,
         currentPrice: 50,
         level: 1
     },
@@ -177,13 +178,23 @@ var shop = {
         catch (e) { }
         ;
         {
+            if (shop.Spoon.detectRequirements() && !stats.shopSpoon.unlocked) {
+                shop.Spoon.unlock();
+            }
+        }
+        {
+            if (shop.ReducedEvap.detectRequirements() && !stats.upgradeReducedEvap.unlocked) {
+                shop.ReducedEvap.unlock();
+            }
+        }
+        {
             if (shop.Map.detectRequirements() && !stats.shopMap.unlocked) {
                 shop.Map.unlock();
             }
             if (shop.Swimsuit.detectRequirements() && !stats.shopSwimsuit.unlocked) {
                 shop.Swimsuit.unlock();
             }
-            if (shop.Desalinator.detectRequirements() && !stats.shopSwimsuit.unlocked) {
+            if (shop.Desalinator.detectRequirements() && !stats.shopDesalinator.unlocked) {
                 shop.Desalinator.unlock();
             }
             if (shop.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
@@ -242,6 +253,16 @@ var shop = {
             return "Overflow";
     },
     Spoon: {
+        id: "Spoon",
+        detectRequirements: function () {
+            if (stats.water > 1)
+                return true;
+        },
+        unlock: function () {
+            stats.shopSpoon.unlocked = true;
+            console.log("New item unlocked!");
+            notifications.add("New item unlocked");
+        },
         purchase: function () {
             if (stats.water < stats.shopSpoon.currentPrice)
                 return;
@@ -255,6 +276,15 @@ var shop = {
         }
     },
     Cup: {
+        detectRequirements: function () {
+            if (stats.water > 50)
+                return true;
+        },
+        unlock: function () {
+            stats.shopCup.unlocked = true;
+            console.log("New item unlocked!");
+            notifications.add("New item unlocked");
+        },
         purchase: function () {
             if (stats.water < stats.shopCup.currentPrice)
                 return;
@@ -268,6 +298,15 @@ var shop = {
         }
     },
     Bucket: {
+        detectRequirements: function () {
+            if (stats.water > 200)
+                return true;
+        },
+        unlock: function () {
+            stats.shopBucket.unlocked = true;
+            console.log("New item unlocked!");
+            notifications.add("New item unlocked");
+        },
         purchase: function () {
             if (stats.water < stats.shopBucket.currentPrice)
                 return;
@@ -354,7 +393,7 @@ var shop = {
     ReducedEvap: {
         id: "ReducedEvap",
         detectRequirements: function () {
-            if (stats.water >= 1)
+            if (stats.water >= stats.upgradeReducedEvap.currentRequirement)
                 return true;
         },
         unlock: function () {
@@ -513,6 +552,10 @@ var graphics = {
         $("#upgradeReducedEvapLevel").text(shop.toRomanNumerals(stats.upgradeReducedEvap.level));
         $("#upgradeBiggerSpoonLevel").text(shop.toRomanNumerals(stats.upgradeBiggerSpoon.level));
         $("#upgradeReinforcedSpoonLevel").text(shop.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
+        //Render Price
+        $("#upgradeReducedEvapPrice").text(stats.upgradeReducedEvap.currentPrice);
+        $("#upgradeBiggerSpoonPrice").text(stats.upgradeBiggerSpoon.currentPrice);
+        $("#upgradeReinforcedSpoonPrice").text(stats.upgradeReinforcedSpoon.currentPrice);
     },
     renderOcean: function () {
         if (stats.ocean.diveUnlocked)
@@ -733,6 +776,7 @@ var init = {
         $("#shopDesalinator").click(shop.Desalinator.purchase);
     },
     upgradePurchase: function () {
+        $("#upgradeReducedEvap").click(shop.ReducedEvap.purchase);
         $("#upgradeBiggerSpoon").click(shop.BiggerSpoon.purchase);
         $("#upgradeReinforcedSpoon").click(shop.ReinforcedSpoon.purchase);
     },
