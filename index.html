@@ -3,10 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Water Clicker</title>
+    <!--
+        Water Clicker v0.0.0
+        Created by ItsTheWhale
+        https://github.com/ItsTheWhale/water-clicker-idle
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A minimalistic water-themed idle game">
     <meta name="keywords" content="water, idle, clicker, incremental, game">
-    <title>Water Clicker</title>
     <link rel="stylesheet" type="text/css" href="styles/main.css">
     <script type="text/javascript" src="libs/jquery-3.6.0.min.js"></script>
     <script defer type="text/javascript" src="scripts/script.js"></script>
@@ -51,22 +56,28 @@
         <div id="pageItems">
             <div class="shop-container">
                 <div class="shop-object" id="shopSpoon">
-                    <h2>Spoon<p id="shopSpoonPrice">x</p>
+                    <h2>Spoon<p id="shopSpoonPrice"></p>
                     </h2>
                     <p id="shopSpoonAmount">0</p>
                     <p class="description">A metal spoon that scoops 1 ml of water per second</p>
                 </div>
                 <div class="shop-object" id="shopCup">
-                    <h2>Cup<p id="shopCupPrice">x</p>
+                    <h2>Cup<p id="shopCupPrice"></p>
                     </h2>
                     <p id="shopCupAmount">0</p>
                     <p class="description">A simple cup that scoops 5ml of water per second</p>
+                </div>
+                <div class="shop-object" id="shopBottle">
+                    <h2>Bottle<p id="shopBottlePrice">x</p>
+                    </h2>
+                    <p id="shopBottleAmount">0</p>
+                    <p class="description">A plastic bottle that can carry 20ml of water per second</p>
                 </div>
                 <div class="shop-object" id="shopBucket">
                     <h2>Bucket<p id="shopBucketPrice">x</p>
                     </h2>
                     <p id="shopBucketAmount">0</p>
-                    <p class="description">An iron bucket that can carry 20ml of water per second</p>
+                    <p class="description">An iron bucket that can carry 50ml of water per second</p>
                 </div>
             </div>
             <div class="shop-container">
@@ -118,7 +129,7 @@
         </div>
         <div id="pageDeep">
             <div id="mainOcean">
-                <div class="flex-container justify-content-center flex-direction-column">
+                <div>
                     <h1>The Ocean Deep</h1>
                     <p style="width:30%">70% of the world's surface is covered by oceans. The deep seabed is less
                         explored than the surface of the moon. The deepest point on Earth - the Challenger Deep - is
@@ -154,6 +165,9 @@
             </div>
             <div>
                 <button>Import</button>
+            </div>
+            <div>
+                <button id="reset">RESET</button>
             </div>
         </div>
     </div>
