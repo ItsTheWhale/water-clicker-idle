@@ -180,18 +180,31 @@ const input = {
     }
 }
 const convert = {
-    toSuffix: function(water: number) {
+    toRomanNumerals: function (level: Number): string {
+        if (level == 1) return "I";
+        else if (level == 2) return "II";
+        else if (level == 3) return "III";
+        else if (level == 4) return "IV";
+        else if (level == 5) return "V";
+        else if (level == 6) return "VI";
+        else if (level == 7) return "VII";
+        else if (level == 8) return "VIII";
+        else if (level == 9) return "IX";
+        else if (level == 10) return "X";
+        else return "Overflow";
+    },
+    toSuffix: function (water: number) {
         let waterUnit = Math.floor(water);
         let suffix;
-        if (stats.water >= 0) {
-            suffix = "ml";
-            waterUnit = Number((waterUnit / 1).toFixed(3));
-        } if (stats.water >= 1000) {
-            suffix = "L";
-            waterUnit = Number((waterUnit / 1000).toFixed(3));
-        } if (stats.water >= 1000000) {
+        if (stats.water >= 1000000) {
             suffix = "kL";
             waterUnit = Number((waterUnit / 1000000).toFixed(3));
+        } else if (stats.water >= 1000) {
+            suffix = "L";
+            waterUnit = Number((waterUnit / 1000).toFixed(3));
+        } else if (stats.water >= 1) {
+            suffix = "ml";
+            waterUnit = Number((waterUnit / 1).toFixed(3));
         };
         return [waterUnit, suffix];
     }
@@ -265,19 +278,6 @@ const shop = {
         stats.shopBottle.wpt = stats.shopBottle.bought * 2 * stats.shopBottle.waterMulti;
         stats.shopBucket.wpt = stats.shopBucket.bought * 5 * stats.shopBucket.waterMulti;
         stats.items.wpt = stats.shopSpoon.wpt + stats.shopCup.wpt + stats.shopBottle.wpt + stats.shopBucket.wpt;
-    },
-    toRomanNumerals: function (level: Number): string {
-        if (level == 1) return "I";
-        else if (level == 2) return "II";
-        else if (level == 3) return "III";
-        else if (level == 4) return "IV";
-        else if (level == 5) return "V";
-        else if (level == 6) return "VI";
-        else if (level == 7) return "VII";
-        else if (level == 8) return "VIII";
-        else if (level == 9) return "IX";
-        else if (level == 10) return "X";
-        else return "Overflow";
     },
     Spoon: {
         id: "Spoon",
@@ -555,9 +555,9 @@ const graphics = {
         if (stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").show();
         if (stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").show();
         if (stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").show();
-        $("#upgradeReducedEvapLevel").text(shop.toRomanNumerals(stats.upgradeReducedEvap.level));
-        $("#upgradeBiggerSpoonLevel").text(shop.toRomanNumerals(stats.upgradeBiggerSpoon.level));
-        $("#upgradeReinforcedSpoonLevel").text(shop.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
+        $("#upgradeReducedEvapLevel").text(convert.toRomanNumerals(stats.upgradeReducedEvap.level));
+        $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
+        $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
         //Render Price
         $("#upgradeReducedEvapPrice").text(stats.upgradeReducedEvap.currentPrice);
         $("#upgradeBiggerSpoonPrice").text(stats.upgradeBiggerSpoon.currentPrice);
@@ -601,7 +601,7 @@ let notifications = {
             $("#notification1").hide();
         }
     },
-    clear: function() {
+    clear: function () {
         for (let i = 0; i < notifications.notifications.length; i++) {
             $(`#notification${i + 1}`).fadeOut();
         }
@@ -767,6 +767,7 @@ const init = {
         init.upgradePurchase();
         init.notifications();
         init.ocean();
+        init.amounts();
         init.save();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
         console.log("Game initialised!");
@@ -881,9 +882,9 @@ const init = {
         if (!stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").hide();
         if (!stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").hide();
         if (!stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").hide();
-        $("#upgradeReducedEvapLevel").text(shop.toRomanNumerals(stats.upgradeReducedEvap.level));
-        $("#upgradeBiggerSpoonLevel").text(shop.toRomanNumerals(stats.upgradeBiggerSpoon.level));
-        $("#upgradeReinforcedSpoonLevel").text(shop.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
+        $("#upgradeReducedEvapLevel").text(convert.toRomanNumerals(stats.upgradeReducedEvap.level));
+        $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
+        $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
     },
     shopPurchase: function () {
         $("#shopSpoon").click(shop.Spoon.purchase);
@@ -934,6 +935,12 @@ const init = {
         if (!stats.ocean.diveUnlocked) $("#enterOcean").hide();
         if (!stats.ocean.diveUnlocked) $("#openBackpack").hide();
         if (!stats.ocean.processorUnlocked) $("#oceanProcessing").hide();
+    },
+    amounts: function () {
+        {
+            let converted = convert.toSuffix(stats.water);
+            $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
+        }
     },
     save: function () {
         {

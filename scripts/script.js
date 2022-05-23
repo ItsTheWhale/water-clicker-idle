@@ -178,20 +178,44 @@ var input = {
     }
 };
 var convert = {
+    toRomanNumerals: function (level) {
+        if (level == 1)
+            return "I";
+        else if (level == 2)
+            return "II";
+        else if (level == 3)
+            return "III";
+        else if (level == 4)
+            return "IV";
+        else if (level == 5)
+            return "V";
+        else if (level == 6)
+            return "VI";
+        else if (level == 7)
+            return "VII";
+        else if (level == 8)
+            return "VIII";
+        else if (level == 9)
+            return "IX";
+        else if (level == 10)
+            return "X";
+        else
+            return "Overflow";
+    },
     toSuffix: function (water) {
         var waterUnit = Math.floor(water);
         var suffix;
-        if (stats.water >= 0) {
-            suffix = "ml";
-            waterUnit = Number((waterUnit / 1).toFixed(3));
-        }
-        if (stats.water >= 1000) {
-            suffix = "L";
-            waterUnit = Number((waterUnit / 1000).toFixed(3));
-        }
         if (stats.water >= 1000000) {
             suffix = "kL";
             waterUnit = Number((waterUnit / 1000000).toFixed(3));
+        }
+        else if (stats.water >= 1000) {
+            suffix = "L";
+            waterUnit = Number((waterUnit / 1000).toFixed(3));
+        }
+        else if (stats.water >= 1) {
+            suffix = "ml";
+            waterUnit = Number((waterUnit / 1).toFixed(3));
         }
         ;
         return [waterUnit, suffix];
@@ -266,30 +290,6 @@ var shop = {
         stats.shopBottle.wpt = stats.shopBottle.bought * 2 * stats.shopBottle.waterMulti;
         stats.shopBucket.wpt = stats.shopBucket.bought * 5 * stats.shopBucket.waterMulti;
         stats.items.wpt = stats.shopSpoon.wpt + stats.shopCup.wpt + stats.shopBottle.wpt + stats.shopBucket.wpt;
-    },
-    toRomanNumerals: function (level) {
-        if (level == 1)
-            return "I";
-        else if (level == 2)
-            return "II";
-        else if (level == 3)
-            return "III";
-        else if (level == 4)
-            return "IV";
-        else if (level == 5)
-            return "V";
-        else if (level == 6)
-            return "VI";
-        else if (level == 7)
-            return "VII";
-        else if (level == 8)
-            return "VIII";
-        else if (level == 9)
-            return "IX";
-        else if (level == 10)
-            return "X";
-        else
-            return "Overflow";
     },
     Spoon: {
         id: "Spoon",
@@ -617,9 +617,9 @@ var graphics = {
             $("#upgradeBiggerSpoon").show();
         if (stats.upgradeReinforcedSpoon.unlocked)
             $("#upgradeReinforcedSpoon").show();
-        $("#upgradeReducedEvapLevel").text(shop.toRomanNumerals(stats.upgradeReducedEvap.level));
-        $("#upgradeBiggerSpoonLevel").text(shop.toRomanNumerals(stats.upgradeBiggerSpoon.level));
-        $("#upgradeReinforcedSpoonLevel").text(shop.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
+        $("#upgradeReducedEvapLevel").text(convert.toRomanNumerals(stats.upgradeReducedEvap.level));
+        $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
+        $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
         //Render Price
         $("#upgradeReducedEvapPrice").text(stats.upgradeReducedEvap.currentPrice);
         $("#upgradeBiggerSpoonPrice").text(stats.upgradeBiggerSpoon.currentPrice);
@@ -962,9 +962,9 @@ var init = {
             $("#upgradeBiggerSpoon").hide();
         if (!stats.upgradeReinforcedSpoon.unlocked)
             $("#upgradeReinforcedSpoon").hide();
-        $("#upgradeReducedEvapLevel").text(shop.toRomanNumerals(stats.upgradeReducedEvap.level));
-        $("#upgradeBiggerSpoonLevel").text(shop.toRomanNumerals(stats.upgradeBiggerSpoon.level));
-        $("#upgradeReinforcedSpoonLevel").text(shop.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
+        $("#upgradeReducedEvapLevel").text(convert.toRomanNumerals(stats.upgradeReducedEvap.level));
+        $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
+        $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
     },
     shopPurchase: function () {
         $("#shopSpoon").click(shop.Spoon.purchase);
@@ -982,6 +982,12 @@ var init = {
     },
     notifications: function () {
         notifications.renderNotifications();
+    },
+    amounts: function () {
+        {
+            var converted = convert.toSuffix(stats.water);
+            $("#waterAmount").html("".concat(converted[0], " ").concat(converted[1], " water"));
+        }
     },
     ocean: function () {
         $("#theDeepOcean").hide();
