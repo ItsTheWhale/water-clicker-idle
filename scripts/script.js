@@ -82,7 +82,9 @@ var stats = {
         deepestDive: 0,
         inventory: {}
     },
-    desalinator: {},
+    desalinator: {
+        money: 0
+    },
     lab: {
         unlocked: false
     },
@@ -173,6 +175,26 @@ var input = {
         shop.detectRequirements();
         achievements.detectRequirements();
         graphics.render();
+    }
+};
+var convert = {
+    toSuffix: function (water) {
+        var waterUnit = Math.floor(water);
+        var suffix;
+        if (stats.water >= 0) {
+            suffix = "ml";
+            waterUnit = Number((waterUnit / 1).toFixed(3));
+        }
+        if (stats.water >= 1000) {
+            suffix = "L";
+            waterUnit = Number((waterUnit / 1000).toFixed(3));
+        }
+        if (stats.water >= 1000000) {
+            suffix = "kL";
+            waterUnit = Number((waterUnit / 1000000).toFixed(3));
+        }
+        ;
+        return [waterUnit, suffix];
     }
 };
 var shop = {
@@ -527,14 +549,15 @@ var achievements = {
 var ocean = {};
 var graphics = {
     render: function () {
-        graphics.renderClicks();
+        graphics.renderWater();
         graphics.renderNavigation();
         graphics.renderShop();
         graphics.renderUpgrades();
         graphics.renderOcean();
     },
-    renderClicks: function () {
-        $("#waterAmount").html("".concat(Math.floor(stats.water), " ml water"));
+    renderWater: function () {
+        var converted = convert.toSuffix(stats.water);
+        $("#waterAmount").html("".concat(converted[0], " ").concat(converted[1], " water"));
     },
     renderNavigation: function () {
         if (stats.totalWater > 0)
@@ -708,7 +731,9 @@ var save = {
                     deepestDive: 0,
                     inventory: {}
                 },
-                desalinator: {},
+                desalinator: {
+                    money: 0
+                },
                 lab: {
                     unlocked: false
                 },

@@ -1,5 +1,5 @@
 import { type } from "jquery";
-import { isTemplateSpan, setEmitFlags } from "typescript";
+import { isTemplateSpan, setEmitFlags, transpileModule } from "typescript";
 
 const cache = {
     setCookie: function (name: string, value: string, expiryDays: number, path: string): void {
@@ -179,6 +179,23 @@ const input = {
         graphics.render();
     }
 }
+const convert = {
+    toSuffix: function(water: number) {
+        let waterUnit = Math.floor(water);
+        let suffix;
+        if (stats.water >= 0) {
+            suffix = "ml";
+            waterUnit = Number((waterUnit / 1).toFixed(3));
+        } if (stats.water >= 1000) {
+            suffix = "L";
+            waterUnit = Number((waterUnit / 1000).toFixed(3));
+        } if (stats.water >= 1000000) {
+            suffix = "kL";
+            waterUnit = Number((waterUnit / 1000000).toFixed(3));
+        };
+        return [waterUnit, suffix];
+    }
+};
 const shop = {
     detectRequirements: function () {
         {
@@ -492,14 +509,15 @@ const achievements = {
 let ocean = {}
 const graphics = {
     render: function () {
-        graphics.renderClicks();
+        graphics.renderWater();
         graphics.renderNavigation();
         graphics.renderShop();
         graphics.renderUpgrades();
         graphics.renderOcean();
     },
-    renderClicks: function () {
-        $("#waterAmount").html(`${Math.floor(stats.water)} ml water`);
+    renderWater: function () {
+        let converted = convert.toSuffix(stats.water);
+        $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
     },
     renderNavigation: function () {
         if (stats.totalWater > 0) $("#navHome").show();
@@ -650,7 +668,9 @@ const save = {
 
                     }
                 },
-                desalinator: {},
+                desalinator: {
+                    money: 0
+                },
                 lab: {
                     unlocked: false
                 },
