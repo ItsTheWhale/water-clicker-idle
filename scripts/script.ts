@@ -84,7 +84,9 @@ let stats = {
         deepestDive: 0,
         inventory: {}
     },
-    desalinator: {},
+    desalinator: {
+        money: 0
+    },
     lab: {
         unlocked: false
     },
@@ -546,6 +548,7 @@ const graphics = {
     },
     renderOcean: function () {
         if (stats.ocean.diveUnlocked) $("#enterOcean").show();
+        if (stats.ocean.diveUnlocked) $("#openBackpack").show();
         if (stats.ocean.processorUnlocked) $("#oceanProcessing").show();
     }
 }
@@ -643,7 +646,9 @@ const save = {
                 },
                 deep: {
                     deepestDive: 0,
-                    inventory: {}
+                    inventory: {
+
+                    }
                 },
                 desalinator: {},
                 lab: {
@@ -809,6 +814,7 @@ const init = {
                 //Subpages
                 $("#mainOcean").show();
                 $("#theDeepOcean").hide();
+                $("#backpack").hide();
                 $("#oceanProcessor").hide();
 
             })
@@ -878,6 +884,7 @@ const init = {
     },
     ocean: function () {
         $("#theDeepOcean").hide();
+        $("#backpack").hide();
         $("#oceanProcessor").hide();
         //Oceanic Zones
         $("#theSurface").hide();
@@ -888,13 +895,24 @@ const init = {
         //Navigating
         $("#enterOcean").click(() => {
             $("#mainOcean").hide();
+            $("#backpack").hide();
             $("#theDeepOcean").show();
+            $("#oceanProcessor").hide();
         });
+        $("#openBackpack").click(() => {
+            $("#mainOcean").hide();
+            $("#backpack").show();
+            $("#theDeepOcean").hide();
+            $("#oceanProcessor").hide();
+        })
         $("#oceanProcessing").click(() => {
             $("#mainOcean").hide();
+            $("#backpack").hide();
+            $("#theDeepOcean").hide();
             $("#oceanProcessor").show();
         });
         if (!stats.ocean.diveUnlocked) $("#enterOcean").hide();
+        if (!stats.ocean.diveUnlocked) $("#openBackpack").hide();
         if (!stats.ocean.processorUnlocked) $("#oceanProcessing").hide();
     },
     save: function () {

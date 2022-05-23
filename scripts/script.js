@@ -605,6 +605,8 @@ var graphics = {
     renderOcean: function () {
         if (stats.ocean.diveUnlocked)
             $("#enterOcean").show();
+        if (stats.ocean.diveUnlocked)
+            $("#openBackpack").show();
         if (stats.ocean.processorUnlocked)
             $("#oceanProcessing").show();
     }
@@ -878,6 +880,7 @@ var init = {
                 //Subpages
                 $("#mainOcean").show();
                 $("#theDeepOcean").hide();
+                $("#backpack").hide();
                 $("#oceanProcessor").hide();
             });
             $("#navLab").click(function () {
@@ -957,6 +960,7 @@ var init = {
     },
     ocean: function () {
         $("#theDeepOcean").hide();
+        $("#backpack").hide();
         $("#oceanProcessor").hide();
         //Oceanic Zones
         $("#theSurface").hide();
@@ -967,14 +971,26 @@ var init = {
         //Navigating
         $("#enterOcean").click(function () {
             $("#mainOcean").hide();
+            $("#backpack").hide();
             $("#theDeepOcean").show();
+            $("#oceanProcessor").hide();
+        });
+        $("#openBackpack").click(function () {
+            $("#mainOcean").hide();
+            $("#backpack").show();
+            $("#theDeepOcean").hide();
+            $("#oceanProcessor").hide();
         });
         $("#oceanProcessing").click(function () {
             $("#mainOcean").hide();
+            $("#backpack").hide();
+            $("#theDeepOcean").hide();
             $("#oceanProcessor").show();
         });
         if (!stats.ocean.diveUnlocked)
             $("#enterOcean").hide();
+        if (!stats.ocean.diveUnlocked)
+            $("#openBackpack").hide();
         if (!stats.ocean.processorUnlocked)
             $("#oceanProcessing").hide();
     },
