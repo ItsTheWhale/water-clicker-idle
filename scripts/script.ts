@@ -73,7 +73,10 @@ let stats = {
         purchasedItems: 0
     },
     achievements: {
-        unlocked: 0
+        totalUnlocked: 0,
+        unlocked: {
+            AWateryStart: false
+        }
     },
     ocean: {
         unlocked: false,
@@ -202,7 +205,7 @@ const convert = {
         } else if (stats.water >= 1000) {
             suffix = "L";
             waterUnit = Number((waterUnit / 1000).toFixed(3));
-        } else if (stats.water >= 1) {
+        } else if (stats.water >= 0) {
             suffix = "ml";
             waterUnit = Number((waterUnit / 1).toFixed(3));
         };
@@ -494,15 +497,22 @@ const shop = {
     }
 };
 const achievements = {
-    achievements: ["AWateryStart"],
-    achievementNames: ["A watery start"],
-    achievementDescriptions: ["Collect a first drop of water"],
-    achievementRequirements: [1],
     detectRequirements: function () {
-        if (stats.water >= achievements.achievementRequirements[stats.achievements.unlocked]) {
-            stats.achievements.unlocked++;
-            console.log("New achievement unlocked!");
-            notifications.add(`New achievement unlocked`);
+        {
+            if (achievements.AWateryStart.detectRequirements() && !stats.achievements.unlocked.AWateryStart) achievements.AWateryStart.unlock();
+        }
+    },
+    unlockAchievement: function () {
+        stats.achievements.totalUnlocked++;
+        notifications.add("You reached a new milestone");
+    },
+    AWateryStart: {
+        detectRequirements: function () {
+            if (stats.totalWater >= 1) return true;
+        },
+        unlock: function () {
+            stats.achievements.unlocked.AWateryStart = true;
+            achievements.unlockAchievement();
         }
     }
 };
@@ -514,6 +524,7 @@ const graphics = {
         graphics.renderShop();
         graphics.renderUpgrades();
         graphics.renderOcean();
+        graphics.renderAchievements();
     },
     renderWater: function () {
         let converted = convert.toSuffix(stats.water);
@@ -525,7 +536,7 @@ const graphics = {
         if (stats.upgrades.unlockedItems > 0) $("#navUpgrades").show();
         if (stats.ocean.unlocked) $("#navDeep").show();
         if (stats.lab.unlocked) $("#navLab").show();
-        if (stats.achievements.unlocked > 0) $("#navAchievements").show();
+        if (stats.achievements.totalUnlocked > 0) $("#navAchieve").show();
         if (stats.totalWater > 0) $("#navSettings").show();
     },
     renderShop: function () {
@@ -568,7 +579,8 @@ const graphics = {
         if (stats.ocean.diveUnlocked) $("#enterOcean").show();
         if (stats.ocean.diveUnlocked) $("#openBackpack").show();
         if (stats.ocean.processorUnlocked) $("#oceanProcessing").show();
-    }
+    },
+    renderAchievements: function () { }
 }
 let notifications = {
     notifications: [''],
@@ -655,7 +667,10 @@ const save = {
                     purchasedItems: 0
                 },
                 achievements: {
-                    unlocked: 0
+                    totalUnlocked: 0,
+                    unlocked: {
+                        AWateryStart: false
+                    }
                 },
                 ocean: {
                     unlocked: false,
@@ -774,9 +789,8 @@ const init = {
     },
     stats: function () {
         try {
-            stats = JSON.parse(cache.getCookie("stats"));
-        } catch (e) {
-        };
+            stats = JSON.parse(cache.getCookie("stats")) ?? stats;
+        } catch (e) { };
     },
     userInterface: function () {
         $("#pageHome").show();
@@ -791,7 +805,7 @@ const init = {
         if (stats.upgrades.unlockedItems == 0) $("#navUpgrades").hide();
         if (!stats.ocean.unlocked) $("#navDeep").hide();
         if (!stats.lab.unlocked) $("#navLab").hide();
-        if (stats.achievements.unlocked == 0) $("#navAchieve").hide();
+        if (stats.achievements.totalUnlocked == 0) $("#navAchieve").hide();
         if (stats.totalWater == 0) $("#navSettings").hide();
     },
     controls: function () {
@@ -943,12 +957,8 @@ const init = {
         }
     },
     save: function () {
-        {
-            $("#save").click(save.save);
-        }
-        {
-            $("#reset").click(save.reset);
-        }
+        $("#save").click(save.save);
+        $("#reset").click(save.reset);
     }
 }
 
@@ -956,4 +966,3 @@ init.game();
 tick.tick();
 // devTools.ruinthefun();
 devTools.waterMulti(5);
-// devTools.unlockOcean();
