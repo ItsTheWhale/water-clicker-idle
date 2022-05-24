@@ -516,7 +516,17 @@ const achievements = {
         }
     }
 };
-let ocean = {}
+let ocean = {
+    deep: {
+        currentDepth: 0,
+        swimUp: function () {},
+        swimDown: function () {},
+        swimContinue: function () {},
+        swimSurface: function () {}
+    },
+    inventory: {},
+    desalinator: {}
+};
 const graphics = {
     render: function () {
         graphics.renderWater();
@@ -581,7 +591,7 @@ const graphics = {
         if (stats.ocean.processorUnlocked) $("#oceanProcessing").show();
     },
     renderAchievements: function () { }
-}
+};
 let notifications = {
     notifications: [''],
     notificationsLifespan: [0],
@@ -621,7 +631,7 @@ let notifications = {
         notifications.notificationsLifespan = [];
         notifications.renderNotifications();
     }
-}
+};
 const tick = {
     tickTimeout: 0,
     tick: function () {
@@ -632,7 +642,7 @@ const tick = {
         graphics.render();
         tick.tickTimeout = window.setTimeout(tick.tick, 100)
     }
-}
+};
 const save = {
     autosaveTimeout: 0,
     autosaveTimer: 0,
@@ -768,9 +778,9 @@ const save = {
             console.log("Game resetted");
         }
     }
-}
+};
 const config = {
-}
+};
 const init = {
     game: function () {
         init.stats();
@@ -960,7 +970,7 @@ const init = {
         $("#save").click(save.save);
         $("#reset").click(save.reset);
     }
-}
+};
 
 init.game();
 tick.tick();
