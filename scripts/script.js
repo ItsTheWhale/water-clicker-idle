@@ -36,6 +36,9 @@ var devTools = {
         stats.ocean.unlocked = true;
         stats.shopMap.hasBought = true;
     },
+    toggleHacks: function () {
+        notifications.add("As you turn on a debugging feature, you feel the developer's power rushing into you");
+    },
     ruinthefun: function () {
         devTools.setWater(9999999999999999);
         devTools.waterMulti(99);
@@ -166,10 +169,6 @@ var stats = {
         level: 1
     }
 };
-var tempStats = {
-    currentPage: "pageHome",
-    currentPageId: 0
-};
 var input = {
     click: function () {
         stats.water += stats.clickMulti * stats.waterMulti;
@@ -227,44 +226,44 @@ var convert = {
 var shop = {
     detectRequirements: function () {
         {
-            if (shop.Spoon.detectRequirements() && !stats.shopSpoon.unlocked) {
-                shop.Spoon.unlock();
+            if (this.Spoon.detectRequirements() && !stats.shopSpoon.unlocked) {
+                this.Spoon.unlock();
             }
-            if (shop.Cup.detectRequirements() && !stats.shopCup.unlocked) {
-                shop.Cup.unlock();
+            if (this.Cup.detectRequirements() && !stats.shopCup.unlocked) {
+                this.Cup.unlock();
             }
-            if (shop.Bottle.detectRequirements() && !stats.shopBottle.unlocked) {
-                shop.Bottle.unlock();
+            if (this.Bottle.detectRequirements() && !stats.shopBottle.unlocked) {
+                this.Bottle.unlock();
             }
-            if (shop.Bucket.detectRequirements() && !stats.shopBucket.unlocked) {
-                shop.Bucket.unlock();
-            }
-        }
-        {
-            if (shop.ReducedEvap.detectRequirements() && !stats.upgradeReducedEvap.unlocked) {
-                shop.ReducedEvap.unlock();
+            if (this.Bucket.detectRequirements() && !stats.shopBucket.unlocked) {
+                this.Bucket.unlock();
             }
         }
         {
-            if (shop.Map.detectRequirements() && !stats.shopMap.unlocked) {
-                shop.Map.unlock();
-            }
-            if (shop.Swimsuit.detectRequirements() && !stats.shopSwimsuit.unlocked) {
-                shop.Swimsuit.unlock();
-            }
-            if (shop.Desalinator.detectRequirements() && !stats.shopDesalinator.unlocked) {
-                shop.Desalinator.unlock();
-            }
-            if (shop.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
-                shop.TestTube.unlock();
+            if (this.ReducedEvap.detectRequirements() && !stats.upgradeReducedEvap.unlocked) {
+                this.ReducedEvap.unlock();
             }
         }
         {
-            if (shop.BiggerSpoon.detectRequirements() && !stats.upgradeBiggerSpoon.unlocked) {
-                shop.BiggerSpoon.unlock();
+            if (this.Map.detectRequirements() && !stats.shopMap.unlocked) {
+                this.Map.unlock();
             }
-            if (shop.ReinforcedSpoon.detectRequirements() && !stats.upgradeReinforcedSpoon.unlocked) {
-                shop.ReinforcedSpoon.unlock();
+            if (this.Swimsuit.detectRequirements() && !stats.shopSwimsuit.unlocked) {
+                this.Swimsuit.unlock();
+            }
+            if (this.Desalinator.detectRequirements() && !stats.shopDesalinator.unlocked) {
+                this.Desalinator.unlock();
+            }
+            if (this.TestTube.detectRequirements() && !stats.shopTestTube.unlocked) {
+                this.TestTube.unlock();
+            }
+        }
+        {
+            if (this.BiggerSpoon.detectRequirements() && !stats.upgradeBiggerSpoon.unlocked) {
+                this.BiggerSpoon.unlock();
+            }
+            if (this.ReinforcedSpoon.detectRequirements() && !stats.upgradeReinforcedSpoon.unlocked) {
+                this.ReinforcedSpoon.unlock();
             }
         }
     },
@@ -558,7 +557,32 @@ var achievements = {
         }
     }
 };
-var ocean = {};
+var ocean = {
+    deep: {
+        player: {
+            health: 0,
+            oxygen: 0,
+            pressure: 0
+        },
+        currentDepth: 0,
+        swimUp: function () {
+            ocean.deep.currentDepth--;
+            ocean.deep.nextTurn();
+        },
+        swimDown: function () {
+            ocean.deep.currentDepth++;
+            ocean.deep.nextTurn();
+        },
+        swimContinue: function () { },
+        swimSurface: function () { },
+        nextTurn: function () {
+            ocean.deep.player.oxygen--;
+            graphics.renderDeep();
+        }
+    },
+    inventory: {},
+    desalinator: {}
+};
 var graphics = {
     render: function () {
         graphics.renderWater();
@@ -645,6 +669,26 @@ var graphics = {
             $("#openBackpack").show();
         if (stats.ocean.processorUnlocked)
             $("#oceanProcessing").show();
+    },
+    renderDeep: function () {
+        if (ocean.deep.currentDepth >= 100) {
+            $("#oceanZone").text("The Hadal Zone");
+        }
+        else if (ocean.deep.currentDepth >= 60) {
+            $("#oceanZone").text("The Abyssal Zone");
+        }
+        else if (ocean.deep.currentDepth >= 30) {
+            $("#oceanZone").text("The Midnight Zone");
+        }
+        else if (ocean.deep.currentDepth >= 15) {
+            $("#oceanZone").text("The Twilight Zone");
+        }
+        else if (ocean.deep.currentDepth >= 1) {
+            $("#oceanZone").text("The Sunlight Zone");
+        }
+        else if (ocean.deep.currentDepth == 0) {
+            $("#oceanZone").text("The Ocean Surface");
+        }
     },
     renderAchievements: function () { }
 };
@@ -846,6 +890,7 @@ var init = {
         init.upgradePurchase();
         init.notifications();
         init.ocean();
+        init.deep();
         init.amounts();
         init.save();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
@@ -1037,6 +1082,12 @@ var init = {
         if (!stats.ocean.processorUnlocked)
             $("#oceanProcessing").hide();
     },
+    deep: function () {
+        $("#swimUp").click(ocean.deep.swimUp);
+        $("#swimDown").click(ocean.deep.swimDown);
+        $("#swimContinue").click(ocean.deep.swimContinue);
+        $("#swimSurface").click(ocean.deep.swimSurface);
+    },
     amounts: function () {
         {
             var converted = convert.toSuffix(stats.water);
@@ -1052,3 +1103,5 @@ init.game();
 tick.tick();
 // devTools.ruinthefun();
 devTools.waterMulti(5);
+devTools.setWater(999999);
+devTools.unlockOcean();
