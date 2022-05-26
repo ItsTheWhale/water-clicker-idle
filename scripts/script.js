@@ -1,4 +1,5 @@
 "use strict";
+exports.__esModule = true;
 var cache = {
     setCookie: function (name, value, expiryDays, path) {
         var d = new Date();
@@ -62,6 +63,7 @@ var stats = {
     totalWater: 0,
     waterMulti: 1,
     clickMulti: 1,
+    completed: false,
     items: {
         wpt: 0
     },
@@ -400,6 +402,7 @@ var shop = {
             stats.shopMap.hasBought = true;
             stats.water -= stats.shopMap.currentPrice;
             stats.ocean.unlocked = true;
+            notifications.add("As you pick up the faded and dusty map, you see a faint outline of a shoreline far away");
             graphics.renderShop();
         }
     },
@@ -421,6 +424,7 @@ var shop = {
             stats.shopSwimsuit.hasBought = true;
             stats.water -= stats.shopSwimsuit.currentPrice;
             stats.ocean.diveUnlocked = true;
+            notifications.add("You gaze down the blue depths, the roar of the ocean, the mysteries");
             graphics.renderShop();
         }
     },
@@ -565,6 +569,7 @@ var ocean = {
             pressure: 0
         },
         currentDepth: 0,
+        currentZone: 0,
         swimUp: function () {
             ocean.deep.currentDepth--;
             ocean.deep.nextTurn();
@@ -576,6 +581,24 @@ var ocean = {
         swimContinue: function () { },
         swimSurface: function () { },
         nextTurn: function () {
+            if (ocean.deep.currentDepth >= 150) {
+                ocean.deep.currentZone = 5;
+            }
+            else if (ocean.deep.currentDepth >= 90) {
+                ocean.deep.currentZone = 4;
+            }
+            else if (ocean.deep.currentDepth >= 40) {
+                ocean.deep.currentZone = 3;
+            }
+            else if (ocean.deep.currentDepth >= 15) {
+                ocean.deep.currentZone = 2;
+            }
+            else if (ocean.deep.currentDepth >= 1) {
+                ocean.deep.currentZone = 1;
+            }
+            else if (ocean.deep.currentDepth == 0) {
+                ocean.deep.currentZone = 0;
+            }
             ocean.deep.player.oxygen--;
             graphics.renderDeep();
         }
@@ -611,6 +634,8 @@ var graphics = {
             $("#navAchieve").show();
         if (stats.totalWater > 0)
             $("#navSettings").show();
+        if (stats.completed)
+            $("#navStory").show();
     },
     renderShop: function () {
         if (stats.shopSpoon.unlocked)
@@ -671,24 +696,28 @@ var graphics = {
             $("#oceanProcessing").show();
     },
     renderDeep: function () {
-        if (ocean.deep.currentDepth >= 100) {
+        if (ocean.deep.currentZone == 5) {
             $("#oceanZone").text("The Hadal Zone");
         }
-        else if (ocean.deep.currentDepth >= 60) {
+        else if (ocean.deep.currentZone == 4) {
             $("#oceanZone").text("The Abyssal Zone");
         }
-        else if (ocean.deep.currentDepth >= 30) {
+        else if (ocean.deep.currentZone == 3) {
             $("#oceanZone").text("The Midnight Zone");
         }
-        else if (ocean.deep.currentDepth >= 15) {
+        else if (ocean.deep.currentZone == 2) {
             $("#oceanZone").text("The Twilight Zone");
         }
-        else if (ocean.deep.currentDepth >= 1) {
+        else if (ocean.deep.currentZone == 1) {
             $("#oceanZone").text("The Sunlight Zone");
         }
-        else if (ocean.deep.currentDepth == 0) {
+        else if (ocean.deep.currentZone == 0) {
             $("#oceanZone").text("The Ocean Surface");
         }
+        ;
+        $("#playerDepth").text(ocean.deep.currentDepth);
+        $("#playerOxygen").text(ocean.deep.player.oxygen);
+        $("#playerHealth").text(ocean.deep.player.health);
     },
     renderAchievements: function () { }
 };
@@ -766,6 +795,7 @@ var save = {
                 totalWater: 0,
                 waterMulti: 1,
                 clickMulti: 1,
+                completed: false,
                 items: {
                     wpt: 0
                 },
@@ -912,6 +942,7 @@ var init = {
         $("#pageLab").hide();
         $("#pageAchieve").hide();
         $("#pageSettings").hide();
+        $("#pageStory").hide();
         if (stats.totalWater == 0)
             $("#navHome").hide();
         if (stats.shop.unlockedItems == 0)
@@ -926,6 +957,8 @@ var init = {
             $("#navAchieve").hide();
         if (stats.totalWater == 0)
             $("#navSettings").hide();
+        if (!stats.completed)
+            $("#navStory").hide();
     },
     controls: function () {
         $("#clickMe").click(input.click);
@@ -938,6 +971,7 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
             });
             $("#navItems").click(function () {
                 $("#pageHome").hide();
@@ -947,6 +981,7 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
             });
             $("#navUpgrades").click(function () {
                 $("#pageHome").hide();
@@ -956,6 +991,7 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
             });
             $("#navDeep").click(function () {
                 $("#pageHome").hide();
@@ -965,6 +1001,7 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
                 //Subpages
                 $("#mainOcean").show();
                 $("#theDeepOcean").hide();
@@ -979,6 +1016,7 @@ var init = {
                 $("#pageLab").show();
                 $("#pageAchieve").hide();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
             });
             $("#navAchieve").click(function () {
                 $("#pageHome").hide();
@@ -988,6 +1026,7 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").show();
                 $("#pageSettings").hide();
+                $("#pageStory").hide();
             });
             $("#navSettings").click(function () {
                 $("#pageHome").hide();
@@ -997,6 +1036,17 @@ var init = {
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
                 $("#pageSettings").show();
+                $("#pageStory").hide();
+            });
+            $("#navStory").click(function () {
+                $("#pageHome").hide();
+                $("#pageItems").hide();
+                $("#pageUpgrades").hide();
+                $("#pageDeep").hide();
+                $("#pageLab").hide();
+                $("#pageAchieve").hide();
+                $("#pageSettings").hide();
+                $("#pageStory").show();
             });
         }
     },
@@ -1062,6 +1112,7 @@ var init = {
             $("#backpack").hide();
             $("#theDeepOcean").show();
             $("#oceanProcessor").hide();
+            graphics.renderDeep();
         });
         $("#openBackpack").click(function () {
             $("#mainOcean").hide();

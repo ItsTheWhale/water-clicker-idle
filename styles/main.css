@@ -4,6 +4,7 @@ body {
 .flex-container {display: flex;}
 .justify-content-center {justify-content: center;}
 .flex-direction-column {flex-direction: column;}
+.center-text {text-align: center;}
 .heading-wrapper {
     display: flex;
     justify-content: center;
@@ -89,4 +90,10 @@ body {
 }
 #theDeepOcean {
     text-align: center;
+}
+.player-info {
+    text-align: center;
+}
+.player-info > [id^=player] {
+    display: inline;
 }
