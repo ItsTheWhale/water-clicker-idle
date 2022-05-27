@@ -529,6 +529,7 @@ let ocean = {
             oxygen: 0,
             pressure: 0,
             surfacing: false,
+            inBattle: false,
             statusEffects: {}
         },
         currentDepth: 0,
@@ -550,6 +551,7 @@ let ocean = {
         },
         swimSurface: function () {
             ocean.deep.player.surfacing = true;
+            ocean.deep.nextTurn();
         },
         nextTurn: function () {
             if (ocean.deep.currentDepth >= 150) {
@@ -569,7 +571,7 @@ let ocean = {
             //Special status effects
             if (ocean.deep.player.surfacing) {
                 ocean.deep.player.oxygen++;
-                ocean.deep.currentDepth -= 5;
+                ocean.deep.currentDepth = ocean.deep.currentDepth <= 0 ? 0 : ocean.deep.currentDepth - 5;
                 graphics.renderDeep();
                 return;
             }
@@ -651,13 +653,13 @@ const graphics = {
     },
     renderDeep: function () {
         if (ocean.deep.currentZone == 5) {
-            $("#oceanZone").text("The Hadal Zone")
+            $("#oceanZone").text("The Hadal Zone");
         } else if (ocean.deep.currentZone == 4) {
-            $("#oceanZone").text("The Abyssal Zone")
+            $("#oceanZone").text("The Abyssal Zone");
         } else if (ocean.deep.currentZone == 3) {
-            $("#oceanZone").text("The Midnight Zone")
+            $("#oceanZone").text("The Midnight Zone");
         } else if (ocean.deep.currentZone == 2) {
-            $("#oceanZone").text("The Twilight Zone")
+            $("#oceanZone").text("The Twilight Zone");
         } else if (ocean.deep.currentZone == 1) {
             $("#oceanZone").text("The Sunlight Zone");
         } else if (ocean.deep.currentZone == 0) {
@@ -667,7 +669,10 @@ const graphics = {
         $("#playerOxygen").text(`Oxygen: ${ocean.deep.player.oxygen}`);
         $("#playerHealth").text(`Health: ${ocean.deep.player.health}`);
         if (ocean.deep.player.surfacing) {
-            $("#navigationControls").hide();
+            $("[data-navControls]").hide();
+        };
+        if (!ocean.deep.player.inBattle) {
+            $("#battleControls").hide();
         };
     },
     renderAchievements: function () { }

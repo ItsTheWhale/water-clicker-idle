@@ -1,16 +1,17 @@
-const cache = {
+"use strict";
+var cache = {
     setCookie: function (name, value, expiryDays, path) {
-        const d = new Date();
+        var d = new Date();
         d.setTime(d.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-        let expiry = d.toUTCString();
-        document.cookie = `${name}=${value}; expires=${expiry}; path=${path}`;
+        var expiry = d.toUTCString();
+        document.cookie = "".concat(name, "=").concat(value, "; expires=").concat(expiry, "; path=").concat(path);
     },
     getCookie: function (cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
             while (c.charAt(0) == ' ') {
                 c = c.substring(1);
             }
@@ -21,10 +22,10 @@ const cache = {
         return "";
     },
     deleteCookie: function (name) {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+        document.cookie = "".concat(name, "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/");
     }
 };
-const devTools = {
+var devTools = {
     setWater: function (water) {
         stats.water = water;
     },
@@ -45,7 +46,7 @@ const devTools = {
         console.log("DEVTOOLS: ruinthefun");
     }
 };
-let gameConstants = {
+var gameConstants = {
     itemPriceIncrement: 1.2,
     upgradePriceIncrement: 2,
     Spoon: {},
@@ -54,7 +55,7 @@ let gameConstants = {
     Bucket: {},
     autosaveTimer: 300000
 };
-let stats = {
+var stats = {
     water: 0,
     clicks: 0,
     wpt: 0,
@@ -172,7 +173,7 @@ let stats = {
         level: 1
     }
 };
-const input = {
+var input = {
     click: function () {
         stats.water += stats.clickMulti * stats.waterMulti;
         stats.totalWater += stats.clickMulti * stats.waterMulti;
@@ -182,7 +183,7 @@ const input = {
         graphics.render();
     }
 };
-const convert = {
+var convert = {
     toRomanNumerals: function (level) {
         if (level == 1)
             return "I";
@@ -208,8 +209,8 @@ const convert = {
             return "Overflow";
     },
     toSuffix: function (water) {
-        let waterUnit = Math.floor(water);
-        let suffix;
+        var waterUnit = Math.floor(water);
+        var suffix;
         if (stats.water >= 1000000) {
             suffix = "kL";
             waterUnit = Number((waterUnit / 1000000).toFixed(3));
@@ -226,7 +227,7 @@ const convert = {
         return [waterUnit, suffix];
     }
 };
-const shop = {
+var shop = {
     detectRequirements: function () {
         {
             if (this.Spoon.detectRequirements() && !stats.shopSpoon.unlocked) {
@@ -317,7 +318,7 @@ const shop = {
             stats.water -= stats.shopSpoon.currentPrice;
             stats.shopSpoon.currentPrice = Math.ceil(stats.shopSpoon.currentPrice * gameConstants.itemPriceIncrement);
             shop.purchaseShopItem();
-        },
+        }
     },
     Cup: {
         detectRequirements: function () {
@@ -540,7 +541,7 @@ const shop = {
         }
     }
 };
-const achievements = {
+var achievements = {
     detectRequirements: function () {
         {
             if (achievements.AWateryStart.detectRequirements() && !stats.achievements.unlocked.AWateryStart)
@@ -562,7 +563,7 @@ const achievements = {
         }
     }
 };
-let ocean = {
+var ocean = {
     deep: {
         player: {
             health: 0,
@@ -570,6 +571,7 @@ let ocean = {
             oxygen: 0,
             pressure: 0,
             surfacing: false,
+            inBattle: false,
             statusEffects: {}
         },
         currentDepth: 0,
@@ -615,7 +617,7 @@ let ocean = {
             //Special status effects
             if (ocean.deep.player.surfacing) {
                 ocean.deep.player.oxygen++;
-                ocean.deep.currentDepth -= 5;
+                ocean.deep.currentDepth = ocean.deep.currentDepth <= 0 ? 0 : ocean.deep.currentDepth - 5;
                 graphics.renderDeep();
                 return;
             }
@@ -631,7 +633,7 @@ let ocean = {
     inventory: {},
     desalinator: {}
 };
-const graphics = {
+var graphics = {
     render: function () {
         graphics.renderWater();
         graphics.renderNavigation();
@@ -641,8 +643,8 @@ const graphics = {
         graphics.renderAchievements();
     },
     renderWater: function () {
-        let converted = convert.toSuffix(stats.water);
-        $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
+        var converted = convert.toSuffix(stats.water);
+        $("#waterAmount").html("".concat(converted[0], " ").concat(converted[1], " water"));
     },
     renderNavigation: function () {
         if (stats.totalWater > 0)
@@ -740,29 +742,33 @@ const graphics = {
             $("#oceanZone").text("The Ocean Surface");
         }
         ;
-        $("#playerDepth").text(`Depth: ${ocean.deep.currentDepth}`);
-        $("#playerOxygen").text(`Oxygen: ${ocean.deep.player.oxygen}`);
-        $("#playerHealth").text(`Health: ${ocean.deep.player.health}`);
+        $("#playerDepth").text("Depth: ".concat(ocean.deep.currentDepth));
+        $("#playerOxygen").text("Oxygen: ".concat(ocean.deep.player.oxygen));
+        $("#playerHealth").text("Health: ".concat(ocean.deep.player.health));
         if (ocean.deep.player.surfacing) {
-            $("#navigationControls").hide();
+            $("[data-navControls]").hide();
+        }
+        ;
+        if (!ocean.deep.player.inBattle) {
+            $("#battleControls").hide();
         }
         ;
     },
     renderAchievements: function () { }
 };
-let notifications = {
+var notifications = {
     notifications: [''],
     notificationsLifespan: [0],
     notificationTimeout: 0,
     renderNotifications: function () {
-        for (let i = 0; i < notifications.notifications.length; i++) {
+        for (var i = 0; i < notifications.notifications.length; i++) {
             notifications.notificationsLifespan[i]--;
             if (notifications.notificationsLifespan[i] == 0) {
-                $(`#notification${i + 1}`).fadeOut();
+                $("#notification".concat(i + 1)).fadeOut();
                 notifications.notifications.shift();
                 notifications.notificationsLifespan.shift();
-                for (let i = 0; i < notifications.notifications.length; i++) {
-                    $(`#notification${i + 2}`).attr("id", `notification${i + 1}`);
+                for (var i_1 = 0; i_1 < notifications.notifications.length; i_1++) {
+                    $("#notification".concat(i_1 + 2)).attr("id", "notification".concat(i_1 + 1));
                 }
             }
         }
@@ -771,26 +777,26 @@ let notifications = {
     add: function (content) {
         notifications.notifications.push(content);
         notifications.notificationsLifespan.push(30);
-        $("#notifications-container").prepend(`<div id="notification${notifications.notifications.length}"class="notification" style="opacity:1">${notifications.notifications[notifications.notifications.length - 1]}</div>`);
+        $("#notifications-container").prepend("<div id=\"notification".concat(notifications.notifications.length, "\"class=\"notification\" style=\"opacity:1\">").concat(notifications.notifications[notifications.notifications.length - 1], "</div>"));
         if (notifications.notifications.length > 15) {
             notifications.notifications.shift();
             notifications.notificationsLifespan.shift();
-            for (let i = 0; i < notifications.notifications.length; i++) {
-                $(`#notification${i + 2}`).attr("id", `notification${i + 1}`);
+            for (var i = 0; i < notifications.notifications.length; i++) {
+                $("#notification".concat(i + 2)).attr("id", "notification".concat(i + 1));
             }
             $("#notification1").hide();
         }
     },
     clear: function () {
-        for (let i = 0; i < notifications.notifications.length; i++) {
-            $(`#notification${i + 1}`).fadeOut();
+        for (var i = 0; i < notifications.notifications.length; i++) {
+            $("#notification".concat(i + 1)).fadeOut();
         }
         notifications.notifications = [];
         notifications.notificationsLifespan = [];
         notifications.renderNotifications();
     }
 };
-const tick = {
+var tick = {
     tickTimeout: 0,
     tick: function () {
         stats.wpt = stats.items.wpt;
@@ -801,7 +807,7 @@ const tick = {
         tick.tickTimeout = window.setTimeout(tick.tick, 100);
     }
 };
-const save = {
+var save = {
     autosaveTimeout: 0,
     autosaveTimer: 0,
     autoSave: function () {
@@ -815,7 +821,7 @@ const save = {
     },
     reset: function () {
         var _a;
-        let confirmation = (_a = window.prompt("Are you sure you want to reset?\nType \"CONTINUE\" to confirm, or any other character to dismiss")) !== null && _a !== void 0 ? _a : '';
+        var confirmation = (_a = window.prompt("Are you sure you want to reset?\nType \"CONTINUE\" to confirm, or any other character to dismiss")) !== null && _a !== void 0 ? _a : '';
         if (confirmation.toLowerCase() === "continue") {
             stats = {
                 water: 0,
@@ -940,8 +946,8 @@ const save = {
         }
     }
 };
-const config = {};
-const init = {
+var config = {};
+var init = {
     game: function () {
         init.stats();
         init.userInterface();
@@ -995,7 +1001,7 @@ const init = {
     controls: function () {
         $("#clickMe").click(input.click);
         {
-            $("#navHome").click(() => {
+            $("#navHome").click(function () {
                 $("#pageHome").show();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1005,7 +1011,7 @@ const init = {
                 $("#pageSettings").hide();
                 $("#pageStory").hide();
             });
-            $("#navItems").click(() => {
+            $("#navItems").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").show();
                 $("#pageUpgrades").hide();
@@ -1015,7 +1021,7 @@ const init = {
                 $("#pageSettings").hide();
                 $("#pageStory").hide();
             });
-            $("#navUpgrades").click(() => {
+            $("#navUpgrades").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").show();
@@ -1025,7 +1031,7 @@ const init = {
                 $("#pageSettings").hide();
                 $("#pageStory").hide();
             });
-            $("#navDeep").click(() => {
+            $("#navDeep").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1040,7 +1046,7 @@ const init = {
                 $("#backpack").hide();
                 $("#oceanProcessor").hide();
             });
-            $("#navLab").click(() => {
+            $("#navLab").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1050,7 +1056,7 @@ const init = {
                 $("#pageSettings").hide();
                 $("#pageStory").hide();
             });
-            $("#navAchieve").click(() => {
+            $("#navAchieve").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1060,7 +1066,7 @@ const init = {
                 $("#pageSettings").hide();
                 $("#pageStory").hide();
             });
-            $("#navSettings").click(() => {
+            $("#navSettings").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1070,7 +1076,7 @@ const init = {
                 $("#pageSettings").show();
                 $("#pageStory").hide();
             });
-            $("#navStory").click(() => {
+            $("#navStory").click(function () {
                 $("#pageHome").hide();
                 $("#pageItems").hide();
                 $("#pageUpgrades").hide();
@@ -1139,20 +1145,20 @@ const init = {
         $("#theAbyssalZone").hide();
         $("#theHadalZone").hide();
         //Navigating
-        $("#enterOcean").click(() => {
+        $("#enterOcean").click(function () {
             $("#mainOcean").hide();
             $("#backpack").hide();
             $("#theDeepOcean").show();
             $("#oceanProcessor").hide();
             graphics.renderDeep();
         });
-        $("#openBackpack").click(() => {
+        $("#openBackpack").click(function () {
             $("#mainOcean").hide();
             $("#backpack").show();
             $("#theDeepOcean").hide();
             $("#oceanProcessor").hide();
         });
-        $("#oceanProcessing").click(() => {
+        $("#oceanProcessing").click(function () {
             $("#mainOcean").hide();
             $("#backpack").hide();
             $("#theDeepOcean").hide();
@@ -1174,8 +1180,8 @@ const init = {
     },
     amounts: function () {
         {
-            let converted = convert.toSuffix(stats.water);
-            $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
+            var converted = convert.toSuffix(stats.water);
+            $("#waterAmount").html("".concat(converted[0], " ").concat(converted[1], " water"));
         }
     },
     save: function () {
@@ -1189,4 +1195,3 @@ tick.tick();
 devTools.waterMulti(5);
 devTools.setWater(999999);
 devTools.unlockOcean();
-export {};
