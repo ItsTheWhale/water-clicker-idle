@@ -97,3 +97,17 @@ body {
 .player-info > [id^=player] {
     display: inline;
 }
+.achievement-wrapper {
+    margin: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    user-select: none;
+}
+.achievement-wrapper > strong {
+    float: left;
+}
+.achievement-wrapper > p {
+    display: inline;
+}

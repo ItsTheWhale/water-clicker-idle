@@ -882,6 +882,7 @@ const init = {
         init.notifications();
         init.ocean();
         init.deep();
+        init.achievements();
         init.amounts();
         init.save();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
@@ -1075,6 +1076,16 @@ const init = {
         $("#swimContinue").click(ocean.deep.swimContinue);
         $("#swimSurface").click(ocean.deep.swimSurface);
         ocean.deep.prepareDive();
+    },
+    achievements: function () {
+        {
+            let milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
+            let milestoneDescIDs = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
+            for (let milestone in milestoneIDs) {
+                $(`#${milestoneIDs[milestone]}`).mouseenter(() => {$(`#${milestoneDescIDs[milestone]}`).show();});
+                $(`#${milestoneIDs[milestone]}`).mouseleave(() => {$(`#${milestoneDescIDs[milestone]}`).hide();});
+            }
+        }
     },
     amounts: function () {
         {

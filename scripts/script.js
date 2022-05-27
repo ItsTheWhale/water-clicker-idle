@@ -593,6 +593,7 @@ var ocean = {
         },
         swimSurface: function () {
             ocean.deep.player.surfacing = true;
+            ocean.deep.nextTurn();
         },
         nextTurn: function () {
             if (ocean.deep.currentDepth >= 150) {
@@ -959,6 +960,7 @@ var init = {
         init.notifications();
         init.ocean();
         init.deep();
+        init.achievements();
         init.amounts();
         init.save();
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
@@ -1177,6 +1179,19 @@ var init = {
         $("#swimContinue").click(ocean.deep.swimContinue);
         $("#swimSurface").click(ocean.deep.swimSurface);
         ocean.deep.prepareDive();
+    },
+    achievements: function () {
+        {
+            var milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
+            var milestoneDescIDs_1 = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
+            var _loop_1 = function (milestone) {
+                $("#".concat(milestoneIDs[milestone])).mouseenter(function () { $("#".concat(milestoneDescIDs_1[milestone])).show(); });
+                $("#".concat(milestoneIDs[milestone])).mouseleave(function () { $("#".concat(milestoneDescIDs_1[milestone])).hide(); });
+            };
+            for (var milestone in milestoneIDs) {
+                _loop_1(milestone);
+            }
+        }
     },
     amounts: function () {
         {
