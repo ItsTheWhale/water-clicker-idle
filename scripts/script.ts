@@ -89,6 +89,9 @@ let stats = {
     },
     deep: {
         deepestDive: 0,
+        player: {
+            maxOxygen: 10
+        },
         inventory: {}
     },
     desalinator: {
@@ -522,11 +525,18 @@ let ocean = {
     deep: {
         player: {
             health: 0,
+            maxHealth: 0,
             oxygen: 0,
-            pressure: 0
+            pressure: 0,
+            surfacing: false,
+            statusEffects: {}
         },
         currentDepth: 0,
         currentZone: 0,
+        event: {
+            add: function () {},
+            clear: function () {}
+        },
         swimUp: function () { 
             ocean.deep.currentDepth--;
             ocean.deep.nextTurn();
@@ -535,8 +545,12 @@ let ocean = {
             ocean.deep.currentDepth++;
             ocean.deep.nextTurn();
         },
-        swimContinue: function () { },
-        swimSurface: function () { },
+        swimContinue: function () {
+            ocean.deep.nextTurn();
+        },
+        swimSurface: function () {
+            ocean.deep.player.surfacing = true;
+        },
         nextTurn: function () {
             if (ocean.deep.currentDepth >= 150) {
                 ocean.deep.currentZone = 5;
@@ -552,7 +566,20 @@ let ocean = {
                 ocean.deep.currentZone = 0;
             }
             ocean.deep.player.oxygen--;
+            //Special status effects
+            if (ocean.deep.player.surfacing) {
+                ocean.deep.player.oxygen++;
+                ocean.deep.currentDepth -= 5;
+                graphics.renderDeep();
+                return;
+            }
             graphics.renderDeep();
+        },
+        prepareDive: function () {
+            ocean.deep.player.oxygen = stats.deep.player.maxOxygen;
+        },
+        endDive: function () {
+            ocean.deep.prepareDive();
         }
     },
     inventory: {},
@@ -636,9 +663,12 @@ const graphics = {
         } else if (ocean.deep.currentZone == 0) {
             $("#oceanZone").text("The Ocean Surface");
         };
-        $("#playerDepth").text(ocean.deep.currentDepth);
-        $("#playerOxygen").text(ocean.deep.player.oxygen);
-        $("#playerHealth").text(ocean.deep.player.health);
+        $("#playerDepth").text(`Depth: ${ocean.deep.currentDepth}`);
+        $("#playerOxygen").text(`Oxygen: ${ocean.deep.player.oxygen}`);
+        $("#playerHealth").text(`Health: ${ocean.deep.player.health}`);
+        if (ocean.deep.player.surfacing) {
+            $("#navigationControls").hide();
+        };
     },
     renderAchievements: function () { }
 };
@@ -740,6 +770,9 @@ const save = {
                 },
                 deep: {
                     deepestDive: 0,
+                    player: {
+                        maxOxygen: 10
+                    },
                     inventory: {
 
                     }
@@ -1036,6 +1069,7 @@ const init = {
         $("#swimDown").click(ocean.deep.swimDown);
         $("#swimContinue").click(ocean.deep.swimContinue);
         $("#swimSurface").click(ocean.deep.swimSurface);
+        ocean.deep.prepareDive();
     },
     amounts: function () {
         {
