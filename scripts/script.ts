@@ -185,6 +185,14 @@ const input = {
         graphics.render();
     }
 }
+const random = {
+    integer: function (max: number, min: number): Number {
+        return Math.floor(Math.random() * max) + min;
+    },
+    object: function (array: Array<any>) {
+        return array[Math.floor(Math.random() * array.length)];
+    }
+}
 const convert = {
     toRomanNumerals: function (level: Number): string {
         if (level == 1) return "I";
@@ -529,7 +537,7 @@ let ocean = {
             oxygen: 0,
             pressure: 0,
             surfacing: false,
-            inBattle: false,
+            inCombat: false,
             statusEffects: {}
         },
         currentDepth: 0,
@@ -537,6 +545,24 @@ let ocean = {
         event: {
             add: function () {},
             clear: function () {}
+        },
+        generate: function () {
+            switch (ocean.deep.currentZone) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                default:
+                    break;
+            }
         },
         swimUp: function () { 
             ocean.deep.currentDepth--;
@@ -575,6 +601,7 @@ let ocean = {
                 graphics.renderDeep();
                 return;
             }
+            ocean.deep.generate();
             graphics.renderDeep();
         },
         prepareDive: function () {
@@ -671,7 +698,7 @@ const graphics = {
         if (ocean.deep.player.surfacing) {
             $("[data-navControls]").hide();
         };
-        if (!ocean.deep.player.inBattle) {
+        if (!ocean.deep.player.inCombat) {
             $("#battleControls").hide();
         };
     },
@@ -867,8 +894,6 @@ const save = {
             console.log("Game resetted");
         }
     }
-};
-const config = {
 };
 const init = {
     game: function () {
