@@ -41,6 +41,9 @@ body {
     width: 30%;
     user-select: none;
 }
+#notifications-container > div {
+    margin-bottom: 1em;
+}
 .nav-settings {
     float: right;
 }

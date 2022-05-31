@@ -1,5 +1,4 @@
 import { type } from "jquery";
-import { isTemplateSpan, setEmitFlags, transpileModule } from "typescript";
 
 const cache = {
     setCookie: function (name: string, value: string, expiryDays: number, path: string): void {
@@ -51,10 +50,38 @@ const devTools = {
 let gameConstants = {
     itemPriceIncrement: 1.2,
     upgradePriceIncrement: 2,
-    Spoon: {},
-    Cup: {},
-    Bottle: {},
-    Bucket: {},
+    deep: {
+        eventChances: {
+            SpawnSmallFish: {
+                d1: 0.05,
+                d2: 0.03,
+                d3: 0,
+                d4: 0,
+                d5: 0
+            },
+            AirPocket: {
+                d1: 0.05,
+                d2: 0.03,
+                d3: 0,
+                d4: 0,
+                d5: 0
+            },
+            SpawnWhale: {
+                d1: 0.01,
+                d2: 0.01,
+                d3: 0.01,
+                d4: 0.01,
+                d5: 0.01
+            },
+            SpawnGiantSquid: {
+                d1: 0,
+                d2: 0,
+                d3: 0.01,
+                d4: 0.02,
+                d5: 0.05
+            }
+        }
+    },
     autosaveTimer: 300000
 }
 let stats = {
@@ -90,7 +117,8 @@ let stats = {
     deep: {
         deepestDive: 0,
         player: {
-            maxOxygen: 10
+            maxOxygen: 10,
+            maxHealth: 10
         },
         inventory: {}
     },
@@ -164,6 +192,7 @@ let stats = {
         unlocked: false,
         hasUnlocked: false,
         hasBought: false,
+        currentRequirement: 1,
         currentPrice: 50,
         level: 1
     },
@@ -171,6 +200,7 @@ let stats = {
         unlocked: false,
         hasUnlocked: false,
         hasBought: false,
+        currentRequirement: 5,
         currentPrice: 100,
         level: 1
     }
@@ -189,7 +219,7 @@ const random = {
     integer: function (max: number, min: number): Number {
         return Math.floor(Math.random() * max) + min;
     },
-    object: function (array: Array<any>) {
+    object: function (array: Array<any>): Array<any> {
         return array[Math.floor(Math.random() * array.length)];
     }
 }
@@ -207,7 +237,7 @@ const convert = {
         else if (level == 10) return "X";
         else return "Overflow";
     },
-    toSuffix: function (water: number) {
+    toSuffix: function (water: number): Array<any> {
         let waterUnit = Math.floor(water);
         let suffix;
         if (stats.water >= 1000000) {
@@ -296,7 +326,7 @@ const shop = {
     Spoon: {
         id: "Spoon",
         detectRequirements: function () {
-            if (stats.water > 1) return true;
+            if (stats.water >= 1) return true;
         },
         unlock: function () {
             stats.shopSpoon.unlocked = true;
@@ -457,6 +487,7 @@ const shop = {
             stats.upgradeReducedEvap.level++;
             stats.water -= stats.upgradeReducedEvap.currentPrice;
             stats.waterMulti += 0.05;
+            stats.upgradeReducedEvap.currentRequirement = Math.ceil(stats.upgradeReducedEvap.currentRequirement * gameConstants.upgradePriceIncrement);
             stats.upgradeReducedEvap.currentPrice = Math.ceil(stats.upgradeReducedEvap.currentPrice * gameConstants.upgradePriceIncrement);
             stats.upgradeReducedEvap.unlocked = false;
             shop.purchaseUpgradeItem();
@@ -535,6 +566,7 @@ let ocean = {
             health: 0,
             maxHealth: 0,
             oxygen: 0,
+            maxOxygen: 10,
             pressure: 0,
             surfacing: false,
             inCombat: false,
@@ -543,28 +575,55 @@ let ocean = {
         currentDepth: 0,
         currentZone: 0,
         event: {
-            add: function () {},
-            clear: function () {}
+            add: function () { },
+            clear: function () { }
+        },
+        events: {
+            SpawnSmallFish: {
+                effects: function () {
+                    
+                }
+            }
         },
         generate: function () {
+            let eventID = '';
             switch (ocean.deep.currentZone) {
                 case 0:
                     break;
                 case 1:
+                    eventID = ocean.deep.generateEvent(1);
                     break;
                 case 2:
+                    eventID = ocean.deep.generateEvent(2);
                     break;
                 case 3:
+                    eventID = ocean.deep.generateEvent(3);
                     break;
                 case 4:
+                    eventID = ocean.deep.generateEvent(4);
                     break;
                 case 5:
+                    eventID = ocean.deep.generateEvent(5);
                     break;
                 default:
                     break;
             }
+            console.log(eventID);
+            $("#oceanEvent").text(eventID);
         },
-        swimUp: function () { 
+        generateEvent: function (depth: Number): string {
+            if (ocean.deep.player.oxygen == 0) return "DeathSuffocation";
+            let spawnDepth = String(depth);
+            type d = '1' | '2' | '3' | '4' | '5';
+            if (!ocean.deep.player.surfacing) (spawnDepth: d) => {
+                if (Math.random() <= gameConstants.deep.eventChances.SpawnSmallFish[`d${spawnDepth}`]) return "SpawnSmallFish";
+                else if (Math.random() <= gameConstants.deep.eventChances.AirPocket[`d${spawnDepth}`]) return "AirPocket";
+                else if (Math.random() <= gameConstants.deep.eventChances.SpawnWhale[`d${spawnDepth}`]) return "SpawnWhale";
+                else if (Math.random() <= gameConstants.deep.eventChances.SpawnGiantSquid[`d${spawnDepth}`]) return "SpawnGiantSquid";
+            }
+            return 'None';
+        },
+        swimUp: function () {
             ocean.deep.currentDepth--;
             ocean.deep.nextTurn();
         },
@@ -573,6 +632,9 @@ let ocean = {
             ocean.deep.nextTurn();
         },
         swimContinue: function () {
+            if (ocean.deep.currentZone == 0) {
+                ocean.deep.endDive();
+            }
             ocean.deep.nextTurn();
         },
         swimSurface: function () {
@@ -597,7 +659,7 @@ let ocean = {
             //Special status effects
             if (ocean.deep.player.surfacing) {
                 ocean.deep.player.oxygen++;
-                ocean.deep.currentDepth = ocean.deep.currentDepth <= 0 ? 0 : ocean.deep.currentDepth - 5;
+                ocean.deep.currentDepth = ocean.deep.currentDepth - 5 <= 0 ? 0 : ocean.deep.currentDepth - 5;
                 graphics.renderDeep();
                 return;
             }
@@ -606,9 +668,12 @@ let ocean = {
         },
         prepareDive: function () {
             ocean.deep.player.oxygen = stats.deep.player.maxOxygen;
+            ocean.deep.player.health = ocean.deep.player.maxHealth;
         },
         endDive: function () {
             ocean.deep.prepareDive();
+            $("#theDeepOcean").hide();
+            $("#mainOcean").show();
         }
     },
     inventory: {},
@@ -664,6 +729,9 @@ const graphics = {
         if (stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").show();
         if (stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").show();
         if (stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").show();
+        if (!stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").hide();
+        if (!stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").hide();
+        if (!stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").hide();
         $("#upgradeReducedEvapLevel").text(convert.toRomanNumerals(stats.upgradeReducedEvap.level));
         $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
         $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
@@ -736,6 +804,7 @@ let notifications = {
         }
     },
     clear: function () {
+        // $("#notifications-container").html('');
         for (let i = 0; i < notifications.notifications.length; i++) {
             $(`#notification${i + 1}`).fadeOut();
         }
@@ -803,7 +872,8 @@ const save = {
                 deep: {
                     deepestDive: 0,
                     player: {
-                        maxOxygen: 10
+                        maxOxygen: 10,
+                        maxHealth: 10
                     },
                     inventory: {
 
@@ -879,6 +949,7 @@ const save = {
                     unlocked: false,
                     hasUnlocked: false,
                     hasBought: false,
+                    currentRequirement: 1,
                     currentPrice: 50,
                     level: 1
                 },
@@ -886,10 +957,12 @@ const save = {
                     unlocked: false,
                     hasUnlocked: false,
                     hasBought: false,
+                    currentRequirement: 1,
                     currentPrice: 100,
                     level: 1
                 }
             }
+            notifications.clear();
             init.game();
             console.log("Game resetted");
         }
@@ -1021,7 +1094,7 @@ const init = {
                 $("#pageDeep").hide();
                 $("#pageLab").hide();
                 $("#pageAchieve").hide();
-                $("#pageSettings").hide(); 
+                $("#pageSettings").hide();
                 $("#pageStory").show();
             })
         }
@@ -1065,12 +1138,6 @@ const init = {
         $("#theDeepOcean").hide();
         $("#backpack").hide();
         $("#oceanProcessor").hide();
-        //Oceanic Zones
-        $("#theSurface").hide();
-        $("#theTwilightZone").hide();
-        $("#theMidnightZone").hide();
-        $("#theAbyssalZone").hide();
-        $("#theHadalZone").hide();
         //Navigating
         $("#enterOcean").click(() => {
             $("#mainOcean").hide();
@@ -1100,6 +1167,8 @@ const init = {
         $("#swimDown").click(ocean.deep.swimDown);
         $("#swimContinue").click(ocean.deep.swimContinue);
         $("#swimSurface").click(ocean.deep.swimSurface);
+        ocean.deep.player.maxHealth = stats.deep.player.maxHealth;
+        ocean.deep.player.maxOxygen = stats.deep.player.maxOxygen;
         ocean.deep.prepareDive();
     },
     achievements: function () {
@@ -1107,8 +1176,8 @@ const init = {
             let milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
             let milestoneDescIDs = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
             for (let milestone in milestoneIDs) {
-                $(`#${milestoneIDs[milestone]}`).mouseenter(() => {$(`#${milestoneDescIDs[milestone]}`).show();});
-                $(`#${milestoneIDs[milestone]}`).mouseleave(() => {$(`#${milestoneDescIDs[milestone]}`).hide();});
+                $(`#${milestoneIDs[milestone]}`).mouseenter(() => { $(`#${milestoneDescIDs[milestone]}`).show(); });
+                $(`#${milestoneIDs[milestone]}`).mouseleave(() => { $(`#${milestoneDescIDs[milestone]}`).hide(); });
             }
         }
     },
