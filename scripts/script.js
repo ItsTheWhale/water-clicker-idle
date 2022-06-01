@@ -341,6 +341,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water >= 1)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopSpoon.unlocked = true;
@@ -363,6 +364,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water > 50 && stats.shopSpoon.bought >= 1)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopCup.unlocked = true;
@@ -385,6 +387,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water > 200 && stats.shopCup.bought >= 1)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopBottle.unlocked = true;
@@ -407,6 +410,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water > 500 && stats.shopBottle.bought >= 5)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopBucket.unlocked = true;
@@ -430,6 +434,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.totalWater > 0)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopMap.unlocked = true;
@@ -452,6 +457,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.shopMap.hasBought)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopSwimsuit.unlocked = true;
@@ -474,6 +480,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.shopMap.hasBought)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopDesalinator.unlocked = true;
@@ -495,6 +502,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water >= 10000 && stats.shopMap.hasBought)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.shopTestTube.unlocked = true;
@@ -506,6 +514,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.water >= stats.upgradeReducedEvap.currentRequirement)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.upgradeReducedEvap.hasUnlocked = true;
@@ -533,6 +542,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.shopSpoon.bought >= 1)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.upgradeBiggerSpoon.hasUnlocked = true;
@@ -559,6 +569,7 @@ var shop = {
         detectRequirements: function () {
             if (stats.shopSpoon.bought >= 5)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.upgradeReinforcedSpoon.hasUnlocked = true;
@@ -596,6 +607,7 @@ var achievements = {
         detectRequirements: function () {
             if (stats.totalWater >= 1)
                 return true;
+            return false;
         },
         unlock: function () {
             stats.achievements.unlocked.AWateryStart = true;
@@ -1309,7 +1321,7 @@ var init = {
 };
 init.game();
 tick.tick();
-// // devTools.ruinthefun();
+// devTools.ruinthefun();
 // devTools.waterMulti(5);
 // devTools.setWater(999999);
 // devTools.unlockOcean();

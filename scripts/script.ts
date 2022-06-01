@@ -206,7 +206,7 @@ let stats = {
     }
 }
 const input = {
-    click: function () {
+    click: function (): void {
         stats.water += stats.clickMulti * stats.waterMulti;
         stats.totalWater += stats.clickMulti * stats.waterMulti;
         stats.clicks++;
@@ -254,7 +254,7 @@ const convert = {
     }
 };
 const shop = {
-    detectRequirements: function () {
+    detectRequirements: function (): void {
         {
             if (this.Spoon.detectRequirements() && !stats.shopSpoon.unlocked) {
                 this.Spoon.unlock();
@@ -297,26 +297,26 @@ const shop = {
             }
         }
     },
-    unlockShopItem: function () {
+    unlockShopItem: function (): void {
         stats.shop.unlockedItems++;
         graphics.renderShop();
     },
-    purchaseShopItem: function () {
+    purchaseShopItem: function (): void {
         stats.shop.purchasedItems++;
         shop.refreshWpt();
         shop.detectRequirements();
         graphics.renderShop();
     },
-    unlockUpgradeItem: function () {
+    unlockUpgradeItem: function (): void {
         stats.upgrades.unlockedItems++;
         graphics.renderUpgrades();
     },
-    purchaseUpgradeItem: function () {
+    purchaseUpgradeItem: function (): void {
         stats.upgrades.purchasedItems++;
         shop.refreshWpt();
         shop.detectRequirements();
     },
-    refreshWpt: function () {
+    refreshWpt: function (): void {
         stats.shopSpoon.wpt = stats.shopSpoon.bought * 0.1 * stats.shopSpoon.waterMulti;
         stats.shopCup.wpt = stats.shopCup.bought * 0.5 * stats.shopCup.waterMulti;
         stats.shopBottle.wpt = stats.shopBottle.bought * 2 * stats.shopBottle.waterMulti;
@@ -325,16 +325,17 @@ const shop = {
     },
     Spoon: {
         id: "Spoon",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water >= 1) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopSpoon.unlocked = true;
             shop.unlockShopItem();
             console.log("New item unlocked!");
             notifications.add("You found a spoon");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.shopSpoon.currentPrice) return;
             if (!stats.shopSpoon.hasBought) stats.shopSpoon.hasBought = true;
             stats.shopSpoon.bought++;
@@ -344,16 +345,17 @@ const shop = {
         },
     },
     Cup: {
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water > 50 && stats.shopSpoon.bought >= 1) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopCup.unlocked = true;
             shop.unlockShopItem();
             console.log("New item unlocked!");
             notifications.add("You found a cup");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.shopCup.currentPrice) return;
             if (!stats.shopCup.hasBought) stats.shopCup.hasBought = true;
             stats.shopCup.bought++;
@@ -363,16 +365,17 @@ const shop = {
         }
     },
     Bottle: {
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water > 200 && stats.shopCup.bought >= 1) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopBottle.unlocked = true;
             shop.unlockShopItem();
             console.log("New item unlocked!");
             notifications.add("You found a bottle");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.shopBottle.currentPrice) return;
             if (!stats.shopBottle.hasBought) stats.shopBottle.hasBought = true;
             stats.shopBottle.bought++;
@@ -382,16 +385,17 @@ const shop = {
         }
     },
     Bucket: {
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water > 500 && stats.shopBottle.bought >= 5) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopBucket.unlocked = true;
             shop.unlockShopItem();
             console.log("New item unlocked!");
             notifications.add("You found a bucket");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.shopBucket.currentPrice) return;
             if (!stats.shopBucket.hasBought) stats.shopBucket.hasBought = true;
             stats.shopBucket.bought++;
@@ -402,16 +406,17 @@ const shop = {
     },
     Map: {
         id: "Map",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.totalWater > 0) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopMap.unlocked = true;
             graphics.renderShop();
             console.log("A Dusty Map unlocked!");
             notifications.add("You see a dusty map in the corner of the room");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.shopMap.hasBought || stats.water < stats.shopMap.currentPrice) return;
             stats.shopMap.hasBought = true;
             stats.water -= stats.shopMap.currentPrice;
@@ -422,16 +427,17 @@ const shop = {
     },
     Swimsuit: {
         id: "Swimsuit",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.shopMap.hasBought) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopSwimsuit.unlocked = true;
             graphics.renderShop();
             console.log("Swimsuit unlocked!");
             notifications.add("You see a swimsuit that allows you to swim in the ocean");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.shopSwimsuit.hasBought || stats.water < stats.shopSwimsuit.currentPrice) return;
             stats.shopSwimsuit.hasBought = true;
             stats.water -= stats.shopSwimsuit.currentPrice;
@@ -442,16 +448,17 @@ const shop = {
     },
     Desalinator: {
         id: "Desalinator",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.shopMap.hasBought) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopDesalinator.unlocked = true;
             graphics.renderShop();
             console.log("Desalinator unlocked!");
             notifications.add("You see blueprints for a desalinator that turns seawater into water");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.shopDesalinator.hasBought || stats.water < stats.shopDesalinator.currentPrice) return;
             stats.shopDesalinator.hasBought = true;
             stats.water -= stats.shopDesalinator.currentPrice;
@@ -461,27 +468,29 @@ const shop = {
     },
     TestTube: {
         id: "TestTube",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water >= 10000 && stats.shopMap.hasBought) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.shopTestTube.unlocked = true;
             console.log("A Test Tube unlocked!");
         }
     },
     ReducedEvap: {
         id: "ReducedEvap",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.water >= stats.upgradeReducedEvap.currentRequirement) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.upgradeReducedEvap.hasUnlocked = true;
             stats.upgradeReducedEvap.unlocked = true;
             shop.unlockUpgradeItem();
             console.log("Reduced Evaporation unlocked!");
             notifications.add("You found an upgrade that reduces water evaporation");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.upgradeReducedEvap.currentPrice) return;
             if (!stats.upgradeReducedEvap.hasBought) stats.upgradeReducedEvap.hasBought = true;
             stats.upgradeReducedEvap.level++;
@@ -495,17 +504,18 @@ const shop = {
     },
     BiggerSpoon: {
         id: "BiggerSpoon",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.shopSpoon.bought >= 1) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.upgradeBiggerSpoon.hasUnlocked = true;
             stats.upgradeBiggerSpoon.unlocked = true;
             shop.unlockUpgradeItem();
             console.log("Bigger Spoon unlocked!");
             notifications.add("You found an upgrade that makes your spoons bigger");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.upgradeBiggerSpoon.currentPrice) return;
             if (!stats.upgradeBiggerSpoon.hasBought) stats.upgradeBiggerSpoon.hasBought = true;
             stats.upgradeBiggerSpoon.level++;
@@ -518,17 +528,18 @@ const shop = {
     },
     ReinforcedSpoon: {
         id: "ReinforcedSpoon",
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.shopSpoon.bought >= 5) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.upgradeReinforcedSpoon.hasUnlocked = true;
             stats.upgradeReinforcedSpoon.unlocked = true;
             shop.unlockUpgradeItem();
             console.log("Reinforced Spoon unlocked!");
             notifications.add("You found an upgrade that plates your spoons with titanium");
         },
-        purchase: function () {
+        purchase: function (): void {
             if (stats.water < stats.upgradeReinforcedSpoon.currentPrice) return;
             if (!stats.upgradeReinforcedSpoon.hasBought) stats.upgradeReinforcedSpoon.hasBought = true;
             stats.upgradeReinforcedSpoon.level++;
@@ -541,20 +552,21 @@ const shop = {
     }
 };
 const achievements = {
-    detectRequirements: function () {
+    detectRequirements: function (): void {
         {
             if (achievements.AWateryStart.detectRequirements() && !stats.achievements.unlocked.AWateryStart) achievements.AWateryStart.unlock();
         }
     },
-    unlockAchievement: function () {
+    unlockAchievement: function (): void {
         stats.achievements.totalUnlocked++;
         notifications.add("You reached a new milestone");
     },
     AWateryStart: {
-        detectRequirements: function () {
+        detectRequirements: function (): Boolean {
             if (stats.totalWater >= 1) return true;
+            return false;
         },
-        unlock: function () {
+        unlock: function (): void {
             stats.achievements.unlocked.AWateryStart = true;
             achievements.unlockAchievement();
         }
@@ -585,7 +597,7 @@ let ocean = {
                 }
             }
         },
-        generate: function () {
+        generate: function (): void {
             let eventID = '';
             switch (ocean.deep.currentZone) {
                 case 0:
@@ -623,25 +635,25 @@ let ocean = {
             }
             return 'None';
         },
-        swimUp: function () {
+        swimUp: function (): void {
             ocean.deep.currentDepth--;
             ocean.deep.nextTurn();
         },
-        swimDown: function () {
+        swimDown: function (): void {
             ocean.deep.currentDepth++;
             ocean.deep.nextTurn();
         },
-        swimContinue: function () {
+        swimContinue: function (): void {
             if (ocean.deep.currentZone == 0) {
                 ocean.deep.endDive();
             }
             ocean.deep.nextTurn();
         },
-        swimSurface: function () {
+        swimSurface: function (): void {
             ocean.deep.player.surfacing = true;
             ocean.deep.nextTurn();
         },
-        nextTurn: function () {
+        nextTurn: function (): void {
             if (ocean.deep.currentDepth >= 150) {
                 ocean.deep.currentZone = 5;
             } else if (ocean.deep.currentDepth >= 90) {
@@ -666,11 +678,11 @@ let ocean = {
             ocean.deep.generate();
             graphics.renderDeep();
         },
-        prepareDive: function () {
+        prepareDive: function (): void {
             ocean.deep.player.oxygen = stats.deep.player.maxOxygen;
             ocean.deep.player.health = ocean.deep.player.maxHealth;
         },
-        endDive: function () {
+        endDive: function (): void {
             ocean.deep.prepareDive();
             $("#theDeepOcean").hide();
             $("#mainOcean").show();
@@ -680,7 +692,7 @@ let ocean = {
     desalinator: {}
 };
 const graphics = {
-    render: function () {
+    render: function (): void {
         graphics.renderWater();
         graphics.renderNavigation();
         graphics.renderShop();
@@ -688,11 +700,11 @@ const graphics = {
         graphics.renderOcean();
         graphics.renderAchievements();
     },
-    renderWater: function () {
+    renderWater: function (): void {
         let converted = convert.toSuffix(stats.water);
         $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
     },
-    renderNavigation: function () {
+    renderNavigation: function (): void {
         if (stats.totalWater > 0) $("#navHome").show();
         if (stats.shop.unlockedItems > 0) $("#navItems").show();
         if (stats.upgrades.unlockedItems > 0) $("#navUpgrades").show();
@@ -702,7 +714,7 @@ const graphics = {
         if (stats.totalWater > 0) $("#navSettings").show();
         if (stats.completed) $("#navStory").show();
     },
-    renderShop: function () {
+    renderShop: function (): void {
         if (stats.shopSpoon.unlocked) $("#shopSpoon").show();;
         if (stats.shopCup.unlocked) $("#shopCup").show();
         if (stats.shopBottle.unlocked) $("#shopBottle").show();
@@ -725,7 +737,7 @@ const graphics = {
         $("#shopBottlePrice").text(String(stats.shopBottle.currentPrice));
         $("#shopBucketPrice").text(String(stats.shopBucket.currentPrice));
     },
-    renderUpgrades: function () {
+    renderUpgrades: function (): void {
         if (stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").show();
         if (stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").show();
         if (stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").show();
@@ -741,12 +753,12 @@ const graphics = {
         $("#upgradeReinforcedSpoonPrice").text(stats.upgradeReinforcedSpoon.currentPrice);
 
     },
-    renderOcean: function () {
+    renderOcean: function (): void {
         if (stats.ocean.diveUnlocked) $("#enterOcean").show();
         if (stats.ocean.diveUnlocked) $("#openBackpack").show();
         if (stats.ocean.processorUnlocked) $("#oceanProcessing").show();
     },
-    renderDeep: function () {
+    renderDeep: function (): void {
         if (ocean.deep.currentZone == 5) {
             $("#oceanZone").text("The Hadal Zone");
         } else if (ocean.deep.currentZone == 4) {
@@ -776,7 +788,7 @@ let notifications = {
     notifications: [''],
     notificationsLifespan: [0],
     notificationTimeout: 0,
-    renderNotifications: function () {
+    renderNotifications: function (): void {
         for (let i = 0; i < notifications.notifications.length; i++) {
             notifications.notificationsLifespan[i]--;
             if (notifications.notificationsLifespan[i] == 0) {
@@ -790,7 +802,7 @@ let notifications = {
         }
         notifications.notificationTimeout = window.setTimeout(notifications.renderNotifications, 1000);
     },
-    add: function (content: string) {
+    add: function (content: string): void {
         notifications.notifications.push(content);
         notifications.notificationsLifespan.push(30);
         $("#notifications-container").prepend(`<div id="notification${notifications.notifications.length}"class="notification" style="opacity:1">${notifications.notifications[notifications.notifications.length - 1]}</div>`);
@@ -803,7 +815,7 @@ let notifications = {
             $("#notification1").hide();
         }
     },
-    clear: function () {
+    clear: function (): void {
         // $("#notifications-container").html('');
         for (let i = 0; i < notifications.notifications.length; i++) {
             $(`#notification${i + 1}`).fadeOut();
@@ -815,7 +827,7 @@ let notifications = {
 };
 const tick = {
     tickTimeout: 0,
-    tick: function () {
+    tick: function (): void {
         stats.wpt = stats.items.wpt;
         stats.water += stats.wpt * stats.waterMulti;
         stats.totalWater += stats.wpt * stats.waterMulti;
@@ -827,16 +839,16 @@ const tick = {
 const save = {
     autosaveTimeout: 0,
     autosaveTimer: 0,
-    autoSave: function () {
+    autoSave: function (): void {
         cache.setCookie("stats", JSON.stringify(stats), 365, '/');
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
         console.log("Saved!");
     },
-    save: function () {
+    save: function (): void {
         cache.setCookie("stats", JSON.stringify(stats), 365, '/');
         console.log("Saved!");
     },
-    reset: function () {
+    reset: function (): void {
         let confirmation = window.prompt("Are you sure you want to reset?\nType \"CONTINUE\" to confirm, or any other character to dismiss") ?? '';
         if (confirmation.toLowerCase() === "continue") {
             stats = {
@@ -969,7 +981,7 @@ const save = {
     }
 };
 const init = {
-    game: function () {
+    game: function (): void {
         init.stats();
         init.userInterface();
         init.controls();
@@ -986,12 +998,12 @@ const init = {
         save.autosaveTimeout = window.setTimeout(save.autoSave, gameConstants.autosaveTimer);
         console.log("Game initialised!");
     },
-    stats: function () {
+    stats: function (): void {
         try {
             stats = JSON.parse(cache.getCookie("stats")) ?? stats;
         } catch (e) { };
     },
-    userInterface: function () {
+    userInterface: function (): void {
         $("#pageHome").show();
         $("#pageItems").hide();
         $("#pageUpgrades").hide();
@@ -1009,7 +1021,7 @@ const init = {
         if (stats.totalWater == 0) $("#navSettings").hide();
         if (!stats.completed) $("#navStory").hide();
     },
-    controls: function () {
+    controls: function (): void {
         $("#clickMe").click(input.click);
         {
             $("#navHome").click(() => {
@@ -1099,7 +1111,7 @@ const init = {
             })
         }
     },
-    shop: function () {
+    shop: function (): void {
         if (!stats.shopSpoon.unlocked) $("#shopSpoon").hide();
         if (!stats.shopCup.unlocked) $("#shopCup").hide();
         if (!stats.shopBottle.unlocked) $("#shopBottle").hide();
@@ -1109,7 +1121,7 @@ const init = {
         if (!stats.shopDesalinator.unlocked || stats.shopDesalinator.hasBought) $("#shopDesalinator").hide();
         if (!stats.shopTestTube.unlocked || stats.shopTestTube.hasBought) $("#shopTestTube").hide();
     },
-    upgrades: function () {
+    upgrades: function (): void {
         if (!stats.upgradeReducedEvap.unlocked) $("#upgradeReducedEvap").hide();
         if (!stats.upgradeBiggerSpoon.unlocked) $("#upgradeBiggerSpoon").hide();
         if (!stats.upgradeReinforcedSpoon.unlocked) $("#upgradeReinforcedSpoon").hide();
@@ -1117,7 +1129,7 @@ const init = {
         $("#upgradeBiggerSpoonLevel").text(convert.toRomanNumerals(stats.upgradeBiggerSpoon.level));
         $("#upgradeReinforcedSpoonLevel").text(convert.toRomanNumerals(stats.upgradeReinforcedSpoon.level));
     },
-    shopPurchase: function () {
+    shopPurchase: function (): void {
         $("#shopSpoon").click(shop.Spoon.purchase);
         $("#shopCup").click(shop.Cup.purchase);
         $("#shopBottle").click(shop.Bottle.purchase);
@@ -1126,15 +1138,15 @@ const init = {
         $("#shopSwimsuit").click(shop.Swimsuit.purchase);
         $("#shopDesalinator").click(shop.Desalinator.purchase);
     },
-    upgradePurchase: function () {
+    upgradePurchase: function (): void {
         $("#upgradeReducedEvap").click(shop.ReducedEvap.purchase);
         $("#upgradeBiggerSpoon").click(shop.BiggerSpoon.purchase);
         $("#upgradeReinforcedSpoon").click(shop.ReinforcedSpoon.purchase);
     },
-    notifications: function () {
+    notifications: function (): void {
         notifications.renderNotifications();
     },
-    ocean: function () {
+    ocean: function (): void {
         $("#theDeepOcean").hide();
         $("#backpack").hide();
         $("#oceanProcessor").hide();
@@ -1162,7 +1174,7 @@ const init = {
         if (!stats.ocean.diveUnlocked) $("#openBackpack").hide();
         if (!stats.ocean.processorUnlocked) $("#oceanProcessing").hide();
     },
-    deep: function () {
+    deep: function (): void {
         $("#swimUp").click(ocean.deep.swimUp);
         $("#swimDown").click(ocean.deep.swimDown);
         $("#swimContinue").click(ocean.deep.swimContinue);
@@ -1171,7 +1183,7 @@ const init = {
         ocean.deep.player.maxOxygen = stats.deep.player.maxOxygen;
         ocean.deep.prepareDive();
     },
-    achievements: function () {
+    achievements: function (): void {
         {
             let milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
             let milestoneDescIDs = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
@@ -1181,13 +1193,13 @@ const init = {
             }
         }
     },
-    amounts: function () {
+    amounts: function (): void {
         {
             let converted = convert.toSuffix(stats.water);
             $("#waterAmount").html(`${converted[0]} ${converted[1]} water`);
         }
     },
-    save: function () {
+    save: function (): void {
         $("#save").click(save.save);
         $("#reset").click(save.reset);
     }
