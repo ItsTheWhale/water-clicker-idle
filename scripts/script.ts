@@ -106,7 +106,8 @@ let stats = {
     achievements: {
         totalUnlocked: 0,
         unlocked: {
-            AWateryStart: false
+            AWateryStart: false,
+            TheOceanDeeps: false
         }
     },
     ocean: {
@@ -555,6 +556,7 @@ const achievements = {
     detectRequirements: function (): void {
         {
             if (achievements.AWateryStart.detectRequirements() && !stats.achievements.unlocked.AWateryStart) achievements.AWateryStart.unlock();
+            if (achievements.TheOceanDeeps.detectRequirements() && !stats.achievements.unlocked.TheOceanDeeps) achievements.TheOceanDeeps.unlock();
         }
     },
     unlockAchievement: function (): void {
@@ -568,6 +570,16 @@ const achievements = {
         },
         unlock: function (): void {
             stats.achievements.unlocked.AWateryStart = true;
+            achievements.unlockAchievement();
+        }
+    },
+    TheOceanDeeps: {
+        detectRequirements: function (): Boolean {
+            if (stats.shopMap.hasBought) return true;
+            return false;
+        },
+        unlock: function (): void {
+            stats.achievements.unlocked.TheOceanDeeps = true;
             achievements.unlockAchievement();
         }
     }
@@ -681,6 +693,7 @@ let ocean = {
         prepareDive: function (): void {
             ocean.deep.player.oxygen = stats.deep.player.maxOxygen;
             ocean.deep.player.health = ocean.deep.player.maxHealth;
+            ocean.deep.player.surfacing = false;
         },
         endDive: function (): void {
             ocean.deep.prepareDive();
@@ -777,9 +790,13 @@ const graphics = {
         $("#playerHealth").text(`Health: ${ocean.deep.player.health}`);
         if (ocean.deep.player.surfacing) {
             $("[data-navControls]").hide();
+        } else {
+            $("[data-navControls]").show();
         };
         if (!ocean.deep.player.inCombat) {
             $("#battleControls").hide();
+        } else {
+            $("#battleControls").show();
         };
     },
     renderAchievements: function () { }
@@ -873,7 +890,8 @@ const save = {
                 achievements: {
                     totalUnlocked: 0,
                     unlocked: {
-                        AWateryStart: false
+                        AWateryStart: false,
+                        TheOceanDeeps: false
                     }
                 },
                 ocean: {
@@ -1188,6 +1206,7 @@ const init = {
             let milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
             let milestoneDescIDs = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
             for (let milestone in milestoneIDs) {
+                $(`#${milestoneDescIDs[milestone]}`).hide();
                 $(`#${milestoneIDs[milestone]}`).mouseenter(() => { $(`#${milestoneDescIDs[milestone]}`).show(); });
                 $(`#${milestoneIDs[milestone]}`).mouseleave(() => { $(`#${milestoneDescIDs[milestone]}`).hide(); });
             }

@@ -105,7 +105,8 @@ var stats = {
     achievements: {
         totalUnlocked: 0,
         unlocked: {
-            AWateryStart: false
+            AWateryStart: false,
+            TheOceanDeeps: false
         }
     },
     ocean: {
@@ -597,6 +598,8 @@ var achievements = {
         {
             if (achievements.AWateryStart.detectRequirements() && !stats.achievements.unlocked.AWateryStart)
                 achievements.AWateryStart.unlock();
+            if (achievements.TheOceanDeeps.detectRequirements() && !stats.achievements.unlocked.TheOceanDeeps)
+                achievements.TheOceanDeeps.unlock();
         }
     },
     unlockAchievement: function () {
@@ -611,6 +614,17 @@ var achievements = {
         },
         unlock: function () {
             stats.achievements.unlocked.AWateryStart = true;
+            achievements.unlockAchievement();
+        }
+    },
+    TheOceanDeeps: {
+        detectRequirements: function () {
+            if (stats.shopMap.hasBought)
+                return true;
+            return false;
+        },
+        unlock: function () {
+            stats.achievements.unlocked.TheOceanDeeps = true;
             achievements.unlockAchievement();
         }
     }
@@ -864,9 +878,15 @@ var graphics = {
         if (ocean.deep.player.surfacing) {
             $("[data-navControls]").hide();
         }
+        else {
+            $("[data-navControls]").show();
+        }
         ;
         if (!ocean.deep.player.inCombat) {
             $("#battleControls").hide();
+        }
+        else {
+            $("#battleControls").show();
         }
         ;
     },
@@ -962,7 +982,8 @@ var save = {
                 achievements: {
                     totalUnlocked: 0,
                     unlocked: {
-                        AWateryStart: false
+                        AWateryStart: false,
+                        TheOceanDeeps: false
                     }
                 },
                 ocean: {
@@ -1300,6 +1321,7 @@ var init = {
             var milestoneIDs = ["milestoneAWateryStart", "milestoneTheOceanDeeps", "milestoneMidnightWaters", "milestoneSeaMonster"];
             var milestoneDescIDs_1 = ["milestoneDescAWateryStart", "milestoneDescTheOceanDeeps", "milestoneDescMidnightWaters", "milestoneDescSeaMonster"];
             var _loop_1 = function (milestone) {
+                $("#".concat(milestoneDescIDs_1[milestone])).hide();
                 $("#".concat(milestoneIDs[milestone])).mouseenter(function () { $("#".concat(milestoneDescIDs_1[milestone])).show(); });
                 $("#".concat(milestoneIDs[milestone])).mouseleave(function () { $("#".concat(milestoneDescIDs_1[milestone])).hide(); });
             };
@@ -1322,6 +1344,6 @@ var init = {
 init.game();
 tick.tick();
 // devTools.ruinthefun();
-// devTools.waterMulti(5);
-// devTools.setWater(999999);
-// devTools.unlockOcean();
+devTools.waterMulti(5);
+devTools.setWater(999999);
+devTools.unlockOcean();
