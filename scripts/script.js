@@ -203,7 +203,8 @@ var stats = {
         currentRequirement: 5,
         currentPrice: 100,
         level: 1
-    }
+    },
+    version: 1
 };
 var input = {
     click: function () {
@@ -706,7 +707,6 @@ var ocean = {
         },
         parseEvent: function (event) {
             var eventArgs = event.split(/[A-Z]/);
-            console.log(String(eventArgs));
         },
         generateEvent: function (depth) {
             if (ocean.deep.player.oxygen == 0)
@@ -1110,7 +1110,8 @@ var save = {
                     currentRequirement: 1,
                     currentPrice: 100,
                     level: 1
-                }
+                },
+                version: 0
             };
             notifications.clear();
             init.game();
@@ -1121,6 +1122,7 @@ var save = {
 var init = {
     game: function () {
         init.stats();
+        init.versionUpdater();
         init.userInterface();
         init.controls();
         init.shop();
@@ -1369,6 +1371,13 @@ var init = {
     save: function () {
         $("#save").click(save.save);
         $("#reset").click(save.reset);
+    },
+    versionUpdater: function () {
+        if (stats.version <= 1) {
+            for (var key in stats) {
+                console.log(key);
+            }
+        }
     }
 };
 init.game();

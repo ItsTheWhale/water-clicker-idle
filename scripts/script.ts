@@ -204,7 +204,8 @@ let stats = {
         currentRequirement: 5,
         currentPrice: 100,
         level: 1
-    }
+    },
+    version: 0
 }
 const input = {
     click: function (): void {
@@ -1024,7 +1025,8 @@ const save = {
                     currentRequirement: 1,
                     currentPrice: 100,
                     level: 1
-                }
+                },
+                version: 0
             }
             notifications.clear();
             init.game();
@@ -1035,6 +1037,7 @@ const save = {
 const init = {
     game: function (): void {
         init.stats();
+        init.versionUpdater();
         init.userInterface();
         init.controls();
         init.shop();
@@ -1255,6 +1258,13 @@ const init = {
     save: function (): void {
         $("#save").click(save.save);
         $("#reset").click(save.reset);
+    },
+    versionUpdater: function (): void {
+        if (stats.version <= 1) {
+            for (let key in stats) {
+                // if (stats[key] == '')
+            }
+        }
     }
 };
 
