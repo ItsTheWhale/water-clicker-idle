@@ -51,7 +51,7 @@ var gameConstants = {
     upgradePriceIncrement: 2,
     deep: {
         eventChances: {
-            SpawnSmallFish: {
+            SpawnSmallfish: {
                 d1: 0.05,
                 d2: 0.03,
                 d3: 0,
@@ -72,7 +72,7 @@ var gameConstants = {
                 d4: 0.01,
                 d5: 0.01
             },
-            SpawnGiantSquid: {
+            SpawnGiantsquid: {
                 d1: 0,
                 d2: 0,
                 d3: 0.01,
@@ -639,16 +639,40 @@ var ocean = {
             pressure: 0,
             surfacing: false,
             inCombat: false,
-            statusEffects: {}
+            statusEffects: {},
+            onTurn: function () { },
+            nextTurn: function () { }
         },
         currentDepth: 0,
         currentZone: 0,
+        entity: /** @class */ (function () {
+            function class_1(health) {
+                this.health = health;
+                this.maxHealth = health;
+            }
+            return class_1;
+        }()),
+        EnemyEntity: {
+            GiantSquid: /** @class */ (function () {
+                function class_2() {
+                    this.health = 200;
+                    this.maxHealth = 200;
+                    this.attack = 50;
+                    this.defense = 40;
+                    this.onTurn = function () { };
+                    this.nextTurn = function () {
+                    };
+                }
+                return class_2;
+            }())
+        },
+        specialEntity: {},
         event: {
             add: function () { },
             clear: function () { }
         },
         events: {
-            SpawnSmallFish: {
+            SpawnSmallfish: {
                 effects: function () {
                 }
             }
@@ -676,8 +700,13 @@ var ocean = {
                 default:
                     break;
             }
+            ocean.deep.parseEvent(eventID);
             console.log(eventID);
             $("#oceanEvent").text(eventID);
+        },
+        parseEvent: function (event) {
+            var eventArgs = event.split(/[A-Z]/);
+            console.log(String(eventArgs));
         },
         generateEvent: function (depth) {
             if (ocean.deep.player.oxygen == 0)
@@ -685,14 +714,14 @@ var ocean = {
             var spawnDepth = String(depth);
             if (!ocean.deep.player.surfacing)
                 (function (spawnDepth) {
-                    if (Math.random() <= gameConstants.deep.eventChances.SpawnSmallFish["d".concat(spawnDepth)])
-                        return "SpawnSmallFish";
+                    if (Math.random() <= gameConstants.deep.eventChances.SpawnSmallfish["d".concat(spawnDepth)])
+                        return "SpawnSmallfish";
                     else if (Math.random() <= gameConstants.deep.eventChances.AirPocket["d".concat(spawnDepth)])
                         return "AirPocket";
                     else if (Math.random() <= gameConstants.deep.eventChances.SpawnWhale["d".concat(spawnDepth)])
                         return "SpawnWhale";
-                    else if (Math.random() <= gameConstants.deep.eventChances.SpawnGiantSquid["d".concat(spawnDepth)])
-                        return "SpawnGiantSquid";
+                    else if (Math.random() <= gameConstants.deep.eventChances.SpawnGiantsquid["d".concat(spawnDepth)])
+                        return "SpawnGiantsquid";
                 });
             return 'None';
         },
@@ -747,6 +776,7 @@ var ocean = {
         prepareDive: function () {
             ocean.deep.player.oxygen = stats.deep.player.maxOxygen;
             ocean.deep.player.health = ocean.deep.player.maxHealth;
+            ocean.deep.player.surfacing = false;
         },
         endDive: function () {
             ocean.deep.prepareDive();

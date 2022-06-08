@@ -52,7 +52,7 @@ let gameConstants = {
     upgradePriceIncrement: 2,
     deep: {
         eventChances: {
-            SpawnSmallFish: {
+            SpawnSmallfish: {
                 d1: 0.05,
                 d2: 0.03,
                 d3: 0,
@@ -73,7 +73,7 @@ let gameConstants = {
                 d4: 0.01,
                 d5: 0.01
             },
-            SpawnGiantSquid: {
+            SpawnGiantsquid: {
                 d1: 0,
                 d2: 0,
                 d3: 0.01,
@@ -594,16 +594,46 @@ let ocean = {
             pressure: 0,
             surfacing: false,
             inCombat: false,
-            statusEffects: {}
+            statusEffects: {},
+            onTurn: function () {},
+            nextTurn: function () {}
         },
         currentDepth: 0,
         currentZone: 0,
+        entity: class {
+            health: Number;
+            maxHealth: Number;
+            constructor (health: Number) {
+                this.health = health;
+                this.maxHealth = health;
+            }
+        },
+        EnemyEntity: {
+            GiantSquid: class {
+                health: Number;
+                maxHealth: Number;
+                attack: Number;
+                defense: Number;
+                onTurn: Function;
+                nextTurn: Function;
+                constructor () {
+                    this.health = 200;
+                    this.maxHealth = 200;
+                    this.attack = 50;
+                    this.defense = 40;
+                    this.onTurn = function () {};
+                    this.nextTurn = function () {
+                    };
+                }
+            }
+        },
+        specialEntity: {},
         event: {
             add: function () { },
             clear: function () { }
         },
         events: {
-            SpawnSmallFish: {
+            SpawnSmallfish: {
                 effects: function () {
                     
                 }
@@ -632,18 +662,22 @@ let ocean = {
                 default:
                     break;
             }
+            ocean.deep.parseEvent(eventID);
             console.log(eventID);
             $("#oceanEvent").text(eventID);
+        },
+        parseEvent: function (event: String): void {
+            let eventArgs = event.split(/[A-Z]/);
         },
         generateEvent: function (depth: Number): string {
             if (ocean.deep.player.oxygen == 0) return "DeathSuffocation";
             let spawnDepth = String(depth);
             type d = '1' | '2' | '3' | '4' | '5';
             if (!ocean.deep.player.surfacing) (spawnDepth: d) => {
-                if (Math.random() <= gameConstants.deep.eventChances.SpawnSmallFish[`d${spawnDepth}`]) return "SpawnSmallFish";
+                if (Math.random() <= gameConstants.deep.eventChances.SpawnSmallfish[`d${spawnDepth}`]) return "SpawnSmallfish";
                 else if (Math.random() <= gameConstants.deep.eventChances.AirPocket[`d${spawnDepth}`]) return "AirPocket";
                 else if (Math.random() <= gameConstants.deep.eventChances.SpawnWhale[`d${spawnDepth}`]) return "SpawnWhale";
-                else if (Math.random() <= gameConstants.deep.eventChances.SpawnGiantSquid[`d${spawnDepth}`]) return "SpawnGiantSquid";
+                else if (Math.random() <= gameConstants.deep.eventChances.SpawnGiantsquid[`d${spawnDepth}`]) return "SpawnGiantsquid";
             }
             return 'None';
         },
